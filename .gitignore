@@ -4,3 +4,4 @@ sor2.md
 *.bk2
 *.mp4
 .vscode
+__pycache__
