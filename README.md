@@ -1,6 +1,10 @@
-## Learning Reinforcement Learning with Gym/Retro
-#### h/t Open Ai
+## Learning Machine Learning
+#### h/t Open Ai and Pytorch
 
-`pip install gym-retro`
-`mv ~/Downloads/sor2.md games/sor2.md`
-`python -m retro.import games`
+Steps
+1. Get the TNMT III NES rom
+2. Install all of the requirements (pytorch might need some extra work)
+3. create a virtual environment
+4. `mv` your rom into the retro library's game directory. `stable/TeenageMutantNinjaTurtles/` or something like that
+5. Train the model
+6. Save April O'Neal, maybe
