@@ -22,7 +22,7 @@ class BadAgent:
         n -U/
     """
 
-    def __init__(self, n, m, o, batch_size):
+    def __init__(self, n=n_in, m=n_h, o=n_out, batch_size=batch_size):
         """
         """
         self.n = n

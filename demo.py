@@ -4,7 +4,7 @@ from time import sleep
 import retro
 
 from file_handler import FileHandler
-
+from agent import BadAgent
 
 game_name = 'TeenageMutantNinjaTurtlesIIITheManhattanProject-Nes'
 game_meta = '-1Player.Leo.Level1-000000'
@@ -26,8 +26,10 @@ def play_video():
 
 if __name__ == "__main__":
 
-    game_name = 'TeenageMutantNinjaTurtlesIIITheManhattanProject-Nes'
-    game_meta = '-1Player.Leo.Level1-000000'
+    #game_name = 'TeenageMutantNinjaTurtlesIIITheManhattanProject-Nes'
+    #game_meta = '-1Player.Leo.Level1-000000'
+
+    curious_histo = set()
 
     # create a file handlin object
     handler = FileHandler(game_name + game_meta)
@@ -39,15 +41,20 @@ if __name__ == "__main__":
 
     env = retro.make(game=game_name, record='.')
     env.reset()
-    while 1:
-        sample_action = env.action_space.sample()
-        while(sample_action[0] == 1 & sample_action[8] == 1):
+
+    forward = True
+    done = 0
+    cumulative_reward = 0
+
+    # 0.2126 R + 0.7152 G + 0.0722 B
+
+
+
+    while not done:
+        if forward:
             sample_action = env.action_space.sample()
-        print(env.buttons)
-        print(sample_action)
-        _obs, _rew, done, _info = env.step(sample_action)
-        if done:
-            break
+            _obs, _rew, done, _info = env.step(sample_action)
+            cumulative_reward += _rew
 
     # create video file from replay
     handler.create_video()
