@@ -2,9 +2,10 @@
 from time import sleep
 
 import retro
+import numpy
 
 from file_handler import FileHandler
-from agent import BadAgent
+from model import Model
 
 game_name = 'TeenageMutantNinjaTurtlesIIITheManhattanProject-Nes'
 game_meta = '-1Player.Leo.Level1-000000'
@@ -26,41 +27,36 @@ def play_video():
 
 if __name__ == "__main__":
 
-    #game_name = 'TeenageMutantNinjaTurtlesIIITheManhattanProject-Nes'
-    #game_meta = '-1Player.Leo.Level1-000000'
-
-    curious_histo = set()
+    game_name = 'TeenageMutantNinjaTurtlesIIITheManhattanProject-Nes'
+    game_meta = '-1Player.Leo.Level1-000000'
 
     # create a file handlin object
     handler = FileHandler(game_name + game_meta)
 
     # rm TMNT video, if there is one
-    handler.rm_video()
+    #handler.rm_video()
     # rm TMNT replay, if there is one
-    handler.rm_backup()
+    #handler.rm_backup()
 
     env = retro.make(game=game_name, record='.')
     env.reset()
 
+    f = open("moves.txt", "w+")
     forward = True
     done = 0
     cumulative_reward = 0
-
-    # 0.2126 R + 0.7152 G + 0.0722 B
-
-
-
+    i = 0
     while not done:
-        if forward:
-            sample_action = env.action_space.sample()
-            _obs, _rew, done, _info = env.step(sample_action)
-            cumulative_reward += _rew
+        i += 1
+        sample_action = env.action_space.sample()
+        f.write(numpy.array2string(sample_action) + '\n')
+        _obs, _rew, done, _info = env.step(sample_action)
+    print(i)
 
     # create video file from replay
-    handler.create_video()
+    #handler.create_video()
 
-    sleep(10)
 
     # spin it
-    handler.play_video()
+    #handler.play_video()
 

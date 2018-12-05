@@ -15,24 +15,25 @@ class FileHandler:
 
     def rm_backup(self):
         try:
-            rm_file_proc = Popen('rm ' + self.backup, shell=True, stdout=PIPE)
+            rm_file_proc = Popen('rm *.bk2', shell=True, stdout=PIPE)
             rm_file_proc.wait()
         except FileNotFoundError:
             pass
 
     def rm_video(self):
         try:
-            rm_file_proc = Popen('rm ' + self.video, shell=True, stdout=PIPE)
+            rm_file_proc = Popen('rm *.mp4', shell=True, stdout=PIPE)
             rm_file_proc.communicate()
         except FileNotFoundError:
             pass
 
     def play_video(self):
-        
+        print('stuff')
+        print(self.video)
         try:
             play_replay = Popen('open ' + self.video, shell=True, stdout=PIPE)
-            play_replay.communicate()
+            play_replay.wait()
         except:
             play_replay = Popen('xdg-open ' + self.video, shell=True, stdout=PIPE)
-            play_replay.communicate()
+            play_replay.wait()
 
