@@ -1,5 +1,11 @@
 ## Learning Machine Learning
-#### h/t Open Ai and Pytorch
+
+PreSteps:
+1. Wavelets
+2. Do some wavelets
+3. Get em going.
+4. A little more
+4. its 4 again
 
 Steps
 1. Get the TNMT III NES rom
