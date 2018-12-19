@@ -3,17 +3,21 @@
 # rgb -> hex
 import numpy as np
 from PIL import Image
-import PIL
-
-def greyscale(r, g, b):
-    return .2126 * r + .7152 * g + .0722 * b
+import matplotlib.pyplot as plt
 
 def get_img(name):
-    return Image.open(name, 'r')
+    return Image.open(name, 'r').convert('L')
 
 img = get_img('important_image.jpeg')
 
-im_arr = np.fromstring(img.tobytes(), dtype=np.uint8)
+im_arr = np.asarray(img)
 
-im = PIL.Image.fromarray(im_arr)
-im.show()
+dft_array = np.fft.fft2(im_arr) 
+freq = np.fft.fftfreq(im_arr.shape[-1])
+print(freq)
+print(dft_array.shape)
+#plt.plot(freq, dft_array.real, freq, dft_array.imag)
+#plt.show()
+
+#im = Image.fromarray(im_arr)
+#im.show()
