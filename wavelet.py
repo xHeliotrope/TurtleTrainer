@@ -1,14 +1,25 @@
 #!/usr/bin/env python3
 
 import numpy as np
+import math
 import matplotlib.pyplot as plt
 
 import cv2
+import pywt
 from pywt import dwt2
+from pywt._extensions._pywt import Wavelet
 
 img = cv2.imread('important_image.jpeg')
 img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-cA, (cH, cV, cD) = dwt2(img, 'db1')
+ 
+c = math.sqrt(2)/2
+dec_lo, dec_hi, rec_lo, rec_hi = [-3, c, c], [3, -c, c], [-3, c, c], [3, c, -c]
+filter_bank = [dec_lo, dec_hi, rec_lo, rec_hi]
+myWavelet = pywt.Wavelet(name="myHaarWavelet", filter_bank=filter_bank)
+cA, (cH, cV, cD) = dwt2(img, myWavelet)
+
+#brule_mother_wavelet = Wavelet('', [cA, cH, cV, cD])
+#print(brule_mother_wavelet)
 
 fig = plt.figure(figsize=(12, 3))
 for i, a in enumerate([cA, cH, cV, cD]):
