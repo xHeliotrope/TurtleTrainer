@@ -17,7 +17,7 @@ class FileHandler:
     def create_video(self):
         """create video file from replay
         """
-        create_video_command = 'python3 -m retro.scripts.playback_move ' + self.backup
+        create_video_command = 'python3 -m retro.scripts.playback_movie ' + self.backup
         create_video_proc = Popen(create_video_command, shell=True, stdout=PIPE) 
         create_video_proc.wait()
 
@@ -56,6 +56,5 @@ class FileHandler:
           - result(str): action + reward string. looks like `[0,0,0,1,0,0,0,0,0,200]` currently
                          (key presses + last position is the reward result)
         """
-        f.write(result + '\n')
+        self.f.write(result + '\n')
         
-
