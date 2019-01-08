@@ -7,7 +7,7 @@ import retro
 import numpy as np
 
 from file_handler import FileHandler
-from turtles import BasicProbabilityTurtle
+from turtles import StaticProbabilityTurtle
 
 game_name = 'TeenageMutantNinjaTurtlesIIITheManhattanProject-Nes'
 game_meta = '-1Player.Leo.Level1-000000'
@@ -41,5 +41,5 @@ if __name__ == "__main__":
         'jump': 10
     }
     
-    bot = BasicProbabilityTurtle(cooldowns, handler)
+    bot = StaticProbabilityTurtle(cooldowns, handler)
     bot.run_simulation(env)

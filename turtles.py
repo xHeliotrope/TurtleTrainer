@@ -17,12 +17,12 @@ import numpy as np
 class Turtle:
     """base class for bots to be run using the 'deap' genetic algorithm library
     """
-    def __init__(self, deap_stuff):
-        """stuff for deap
+    def __init__(self, reward):
+        """every turtle needs a reward
         """
-        self.deap_stuff = deap_stuff
+        self.reward = reward
 
-class BasicProbabilityTurtle(Turtle):
+class StaticProbabilityTurtle(Turtle):
     """hard coded probability-based agent
     probability checks could be standardized
     sometimes probabilities are evaluated if a number is less than a random number
@@ -31,16 +31,17 @@ class BasicProbabilityTurtle(Turtle):
     which makes this a good candidate for use in a genetic algorithm
     """
     def __init__(self, cooldowns, file_handler, directions={'4':0,'5':0,'6':0,'7':0}, **kwargs):
-        """initialize the Basic Probability Bot
+        """initialize the Static Probability Bot
 
         Arguments:
           - cooldowns (dict): cooldowns used after certain actions (can prevent special attack)
-          - file_handler (<FileHandler obj>): used for saving the actions/rewards to a txt file
+          - file_handler (<file_handler.FileHandler obj>): used for saving the actions/rewards to a txt file
           - directions (dict): dict of `4`, `5`, `6` and `7` keys as `1` or `0` values
                                keys are the index of (`up`, `down`, `left`, `right` gamepad keys)
           - **kwargs (dict): not required params (direction/attack/jump probabilities)
         """
-        super().__init__('')
+        # initial reward is 0
+        super().__init__(0)
         self.cooldowns = cooldowns
         self.file_handler = file_handler
         self.directions = directions
@@ -116,6 +117,23 @@ class BasicProbabilityTurtle(Turtle):
             self.to_jump = kwargs['to_jump']
         if 'to_attack' in kwargs:
             self.to_attack = kwargs['to_attack']
+
+    @staticmethod
+    def prepare_kwargs(attribute_list):
+        """Takes a list of attributes from deap
+        and creates the necessary state transition variables in
+        the constructor for the StaticProbabilityTurtle
+
+        Arguments:
+          - (attribute_list): list of 0-100 probabilities for state transitions (e.g. up to down)
+
+        Returns:
+          - (dict): kwargs to be fed into StaticProbabilityTurtle constructor
+        """
+        the_kwargs = {}
+        return the_kwargs
+
+
 
     def switch_direction(self, current, future):
         """switch directions from current to future
@@ -206,7 +224,6 @@ class BasicProbabilityTurtle(Turtle):
         """
         # boolean value denoting whether the bot has died yet or not (ends the simulation)
         done = False
-        # initial state is no action
 
         while not done:
             # random integer used for state-transition decision making
@@ -221,4 +238,6 @@ class BasicProbabilityTurtle(Turtle):
             state_info = np.append(action, _rew)
             state_str = str(state_info)
             self.file_handler.log_state(state_str)
+
+        self.reward = _rew
 
