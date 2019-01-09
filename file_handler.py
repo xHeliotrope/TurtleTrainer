@@ -1,12 +1,14 @@
 from subprocess import Popen
 from subprocess import PIPE
 
+game_name = 'TeenageMutantNinjaTurtlesIIITheManhattanProject-Nes'
+game_meta = '-1Player.Leo.Level1-000000'
 
 class FileHandler:
     """Used for managing backup, mp4 and data logging files
     """
 
-    def __init__(self, filename, data_file='gamedata.txt'):
+    def __init__(self, filename=game_name+game_meta, data_file='gamedata.txt'):
         """set the file names
         and open up the logging file for logging
         """

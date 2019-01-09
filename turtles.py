@@ -213,7 +213,6 @@ class StaticProbabilityTurtle(Turtle):
         for key, value in self.directions.items():
             action[int(key)] = value
 
-        print(action)
         return action
 
     def run_simulation(self, env):
@@ -225,6 +224,7 @@ class StaticProbabilityTurtle(Turtle):
         # boolean value denoting whether the bot has died yet or not (ends the simulation)
         done = False
 
+        score = 0
         while not done:
             # random integer used for state-transition decision making
             random_int = randint(0, 100)
@@ -235,9 +235,8 @@ class StaticProbabilityTurtle(Turtle):
             # take an action in the environment, and get the environmental info from that step
             _obs, _rew, done, _info = env.step(action)
             # next 3 lines write the action that was taken and the reward from that action to a file
-            state_info = np.append(action, _rew)
-            state_str = str(state_info)
-            self.file_handler.log_state(state_str)
 
-        self.reward = _rew
+            score += _rew
+
+        self.reward = score
 
