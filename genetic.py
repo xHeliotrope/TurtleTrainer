@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+!/usr/bin/env python3
 
 import random
 
@@ -29,16 +29,25 @@ toolbox = base.Toolbox()
 
 # the 8 attributes a StaticProbabilityTurtle Individual needs to be configured
 # each is a state transition variable, with values 0 -> 100 being a percentage
-toolbox.register("attr_up_to_down", random.randint, 0, 50)
-toolbox.register("attr_up_to_None", random.randint, 0, 50)
-toolbox.register("attr_down_to_up", random.randint, 0, 50)
-toolbox.register("attr_down_to_None", random.randint, 0, 50)
-toolbox.register("attr_None_to_up", random.randint, 0, 50)
-toolbox.register("attr_None_to_down", random.randint, 0, 50)
-toolbox.register("attr_left_to_right", random.randint, 0, 50)
-toolbox.register("attr_right_to_left", random.randint, 0, 50)
-toolbox.register("attr_to_jump", random.randint, 0, 100)
-toolbox.register("attr_to_attack", random.randint, 0, 100)
+
+def random_tuple(length, maximum):
+    """random int combinations that add to a number
+
+    Arguments:
+        number (int): 
+    """
+    number_one = random.randint(0, number)
+    number_two = random.randint(
+    
+
+toolbox.register("attr_ud_from_up", random.randint, 0, 50)
+toolbox.register("attr_ud_from_down", random.randint, 0, 50)
+toolbox.register("attr_ud_from_None", random.randint, 0, 50)
+toolbox.register("attr_lr_from_left", random.randint, 0, 50)
+toolbox.register("attr_lr_from_right", random.randint, 0, 50)
+toolbox.register("attr_lr_from_None", random.randint, 0, 50)
+toolbox.register("attr_jump", random.randint, 0, 100)
+toolbox.register("attr_attack", random.randint, 0, 100)
 
 toolbox.register(
         "individual",
@@ -96,3 +105,4 @@ def main():
     fits = [ind.fitness.values[0] for ind in pop]
     return pop, fitnesses
 
+main()
