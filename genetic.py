@@ -36,7 +36,7 @@ def random_tuple(l, sigma):
     numrs = [0, sigma]
     random_list = []
     # populate numrs with l integers, that are evenly distributed between 0 and sigma
-    [ numrs.append(random.randint(0, sigma)) for _ in range(l) ]
+    [ numrs.append(random.randint(0, sigma)) for _ in range(l - 1) ]
     numrs.sort()
     # not actually reducing, more lambda-ing to populate random_list
     # might not actually need a reduce here
@@ -49,6 +49,13 @@ toolbox = base.Toolbox()
 
 toolbox.register("attr_jump", random.randint, 0, 100)
 toolbox.register("attr_attack", random.randint, 0, 100)
+toolbox.register("attr_None_vert", random_tuple, 3, 100)
+toolbox.register("attr_None_horiz", random_tuple, 3, 100)
+toolbox.register("attr_left", random_tuple, 3, 100)
+toolbox.register("attr_right", random_tuple, 3, 100)
+toolbox.register("attr_up", random_tuple, 3, 100)
+toolbox.register("attr_down", random_tuple, 3, 100)
+
 
 toolbox.register(
         "individual",
@@ -56,7 +63,13 @@ toolbox.register(
         creator.Individual,
         (
             toolbox.attr_jump,
-            toolbox.attr_attack
+            toolbox.attr_attack,
+            toolbox.attr_None_vert,
+            toolbox.attr_None_horiz,
+            toolbox.attr_left,
+            toolbox.attr_right,
+            toolbox.attr_up,
+            toolbox.attr_down
         ),
         n=1)
 
@@ -77,7 +90,7 @@ def evaluate_turtle(individual):
     }
     from pprint import pprint
     pprint(individual)
-    turtle = StaticProbabilityTurtle(cooldowns, file_handler)
+    turtle = StaticProbabilityTurtle(file_handler)
     env = retro.make(game=game_name)
     env.reset()
     print(turtle.horizontal_transitions)

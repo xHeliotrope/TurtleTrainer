@@ -31,7 +31,7 @@ class StaticProbabilityTurtle(Turtle):
     and the rewards are concrete
     which make this a good candidate for use in a genetic algorithm
     """
-    def __init__(self, cooldowns, file_handler, directions={'4':0,'5':0,'6':0,'7':0}, **kwargs):
+    def __init__(self, file_handler, default_cooldowns={'jump': 10, 'attack': 10}, directions={'4':0,'5':0,'6':0,'7':0}, **kwargs):
         """initialize the Static Probability Bot
 
         Arguments:
@@ -43,7 +43,12 @@ class StaticProbabilityTurtle(Turtle):
         """
         # initial reward is 0
         super().__init__(0)
-        self.cooldowns = cooldowns
+        # setup the cooldowns
+        self.cooldowns = {}
+        self.default_cooldowns = default_cooldowns
+        for key, value in default_cooldowns.items():
+            self.cooldowns[key] = value
+
         self.file_handler = file_handler
         self.directions = directions
 
