@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
-
+from functools import reduce
 import random
-
 import retro
 
 from deap import algorithms
@@ -24,28 +23,30 @@ game_meta = '-1Player.Leo.Level1-000000'
 creator.create("ScoreMax", base.Fitness, weights=(1.0,))
 creator.create("Individual", list, fitness=creator.ScoreMax)
 
-# a place to register all of the genetic functions and classes
-toolbox = base.Toolbox()
+def random_tuple(l, sigma):
+    """returns a tuple of random numbers.
+     - the tuple is of length `l`
+     - the sum of the numbers in the tuple is `sigma`
+
+    Arguments:
+        l (int): length of the tuple
+        sigma (int): sum of all the values in the tuple
+    """
+    # start with 2 numbers to 'bookend' the list
+    numrs = [0, sigma]
+    random_list = []
+    # populate numrs with l integers, that are evenly distributed between 0 and sigma
+    [ numrs.append(random.randint(0, sigma)) for _ in range(l) ]
+    numrs.sort()
+    # not actually reducing, more lambda-ing to populate random_list
+    # might not actually need a reduce here
+    random_list = [numrs[index+1] - numrs[index] for index in range(l)]
+    return tuple(random_list)
 
 # the 8 attributes a StaticProbabilityTurtle Individual needs to be configured
 # each is a state transition variable, with values 0 -> 100 being a percentage
+toolbox = base.Toolbox()
 
-def random_tuple(length, maximum):
-    """random int combinations that add to a number
-
-    Arguments:
-        number (int): 
-    """
-    number_one = random.randint(0, number)
-    number_two = random.randint(
-    
-
-toolbox.register("attr_ud_from_up", random.randint, 0, 50)
-toolbox.register("attr_ud_from_down", random.randint, 0, 50)
-toolbox.register("attr_ud_from_None", random.randint, 0, 50)
-toolbox.register("attr_lr_from_left", random.randint, 0, 50)
-toolbox.register("attr_lr_from_right", random.randint, 0, 50)
-toolbox.register("attr_lr_from_None", random.randint, 0, 50)
 toolbox.register("attr_jump", random.randint, 0, 100)
 toolbox.register("attr_attack", random.randint, 0, 100)
 
@@ -54,19 +55,12 @@ toolbox.register(
         tools.initCycle,
         creator.Individual,
         (
-            toolbox.attr_up_to_down,
-            toolbox.attr_up_to_None,
-            toolbox.attr_down_to_up,
-            toolbox.attr_down_to_None,
-            toolbox.attr_None_to_up,
-            toolbox.attr_None_to_down,
-            toolbox.attr_to_jump,
-            toolbox.attr_to_attack
+            toolbox.attr_jump,
+            toolbox.attr_attack
         ),
         n=1)
 
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
-
 
 def evaluate_turtle(individual):
     """evaluates the success of a given turtlebot
