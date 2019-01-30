@@ -28,7 +28,8 @@ class StaticProbabilityTurtle(Turtle):
     sometimes probabilities are evaluated if a number is less than a random number
     other times its if a number modulo another number is 0
     not very sophisticated, but the state transition numbers are configurable
-    which makes this a good candidate for use in a genetic algorithm
+    and the rewards are concrete
+    which make this a good candidate for use in a genetic algorithm
     """
     def __init__(self, cooldowns, file_handler, directions={'4':0,'5':0,'6':0,'7':0}, **kwargs):
         """initialize the Static Probability Bot
@@ -45,32 +46,6 @@ class StaticProbabilityTurtle(Turtle):
         self.cooldowns = cooldowns
         self.file_handler = file_handler
         self.directions = directions
-        # the following numbers are used to compute when to change direction or attack or jump 
-        #   probabilities:
-        #       - vertical:
-        #           - up
-        #               - 10% switch from up to down
-        #               - 3% switch from up to None
-        #               - 87% no change
-        #           - down
-        #               - 10% switch from down to up
-        #               - 3% switch from down to None
-        #               - 87% no change
-        #           - None
-        #               - 20% switch from None to up
-        #               - 20% switch from None to down
-        #               - 60% no change
-        #       - horizontal:
-        #           - left
-        #               - 10% switch probability from right to left
-        #               - 90% no change
-        #           - left
-        #               - 20% switch probability from left to right 
-        #               - 80% no change
-        #       - attack:
-        #           - 5% of the time
-        #       - jump:
-        #           - 20% of the time
 
         self.horizontal_transitions = {
             'right': {
@@ -132,7 +107,6 @@ class StaticProbabilityTurtle(Turtle):
         """
         the_kwargs = {}
         return the_kwargs
-
 
 
     def switch_direction(self, current, future):
@@ -228,7 +202,7 @@ class StaticProbabilityTurtle(Turtle):
         while not done:
             # random integer used for state-transition decision making
             random_int = randint(0, 100)
-            # base action is to do nothing (all button on keypad are zero)
+            # base action is to do nothing (all buttons on keypad are zero)
             action = np.zeros(9, dtype=np.int8)
             # determine next action (uses previous state information of direction)
             action = self.next_action(action, random_int)
