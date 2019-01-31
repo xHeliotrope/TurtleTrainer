@@ -46,12 +46,15 @@ class StaticProbabilityTurtle(Turtle):
             "horiz_None": None
         }
     }
-    def __init__(self, file_handler, default_cooldowns={'jump': 10, 'attack': 10}, directions={'4':0,'5':0,'6':0,'7':0}, **kwargs):
+
+    def __init__(self, file_handler, transitions={}, default_cooldowns={'jump': 10, 'attack': 10}, directions={'4':0,'5':0,'6':0,'7':0}, **kwargs):
         """initialize the Static Probability Bot
 
         Arguments:
           - cooldowns (dict): cooldowns used after certain actions (can prevent special attack)
           - file_handler (<file_handler.FileHandler obj>): used for saving the actions/rewards to a txt file
+          - transitions (dict): for registering all of the directions and evaluating how to move
+                                based on the probilities defined in the associated Direction object
           - directions (dict): dict of `4`, `5`, `6` and `7` keys as `1` or `0` values
                                keys are the index of (`up`, `down`, `left`, `right` gamepad keys)
           - **kwargs (dict): not required params (direction/attack/jump probabilities)
@@ -90,6 +93,7 @@ class StaticProbabilityTurtle(Turtle):
                 new_direction = Direction(direction_name, direction_key)
                 for index, probability in enumerate(attribute_list.pop()):
                     new_direction.update_transitions(related_directions[index], probability)
+                self.transistions[new_direction["name"]] = new_direction
 
 
     def switch_direction(self, current, future):
@@ -121,16 +125,31 @@ class StaticProbabilityTurtle(Turtle):
         # decrement the jump and attack cooldowns
         self.cooldowns['jump'] -= 1
         self.cooldowns['attack'] -= 1
+
+
         
+
+
         # (possibly) switch from right to left or left to right
         if self.directions['7']:
+
             if random_number % self.horizontal_transitions['right']['to_left'] == 0:
                 # switch from right to left
                 self.switch_direction('7', '6')
-        else:
+
+        elif self.directions['6']:
+
             if random_number % self.horizontal_transitions['left']['to_right'] == 0:
                 # switch from left to right
                 self.switch_direction('6', '7')
+
+        else:
+            pass
+
+
+
+
+
 
         # (possibly) switch from up, down or None
         if self.directions['4']:
@@ -155,13 +174,16 @@ class StaticProbabilityTurtle(Turtle):
                 # switch from None to down
                 self.switch_direction(None, '5')
 
-        # attack like 5% of the time, when the `jump` cooldown is inactive
+
+
+
+        # attack when the `jump` cooldown is inactive
         if random_number < self.to_attack and self.cooldowns['jump'] <= 0:
             action[0] = 1
             # prevent special attacks
             self.cooldowns['attack'] = 10
 
-        # attack like 20% of the time, when the `attack` cooldown is inactive
+        # jump when the `attack` cooldown is inactive
         if random_number < self.to_jump and self.cooldowns['attack'] <= 0:
             action[8] = 1
             self.cooldowns['jump'] = 10
