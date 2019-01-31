@@ -94,12 +94,22 @@ class StaticProbabilityTurtle(Turtle):
         self.to_attack = attribute_list.pop(0)
         for direction_set, directions in self.GAMEPAD_KEYS.items():
             related_directions = list(directions.keys())
+            # this is needed so that the probabilities form a range
             for direction_name, direction_key in directions.items():
                 new_direction = Direction(direction_name, direction_key)
+                base_probability = 0
                 for index, probability in enumerate(attribute_list.pop()):
-                    new_direction.update_transitions(related_directions[index], probability)
-                self.transitions[new_direction.name] = new_direction
+                    new_direction.update_transitions(
+                            related_directions[index], 
+                            {
+                                'start': base_probability, 
+                                'end': base_probability + probability - 1
+                            }
+                        )
 
+                    # update the base value for the next range
+                    base_probability = base_probability + probability
+                self.transitions[new_direction.name] = new_direction
 
     def switch_direction(self, current, future):
         """switch directions from current to future
@@ -116,6 +126,13 @@ class StaticProbabilityTurtle(Turtle):
         if future:
             self.directions[future] = 1
 
+    def compare_transition(self, direction_one, direction_two, number):
+        greater_than = self.transitions[direction_one].transitions[direction_two]['start'] <= number
+        less_than = self.transitions[direction_one].transitions[direction_two]['end'] >= number
+        in_range = greater_than and less_than
+        return in_range
+
+
     def next_action(self, action, random_number):
         """calculates next action to take,
         from previous action state
@@ -131,45 +148,44 @@ class StaticProbabilityTurtle(Turtle):
         self.cooldowns['jump'] -= 1
         self.cooldowns['attack'] -= 1
 
-        poss_trans = list(self.transitions.keys())
-        for x in poss_trans:
-            print(self.transitions[x])
-
         # (possibly) switch from right to left or left to right
         if self.directions['7']:
-            self.switch_direction('7', '6')
+            if self.compare_transition('right', 'left', random_number):
+                self.switch_direction('7', '6')
+            elif self.compare_transition('right', 'horiz_None', random_number):
+                self.switch_direction('7', None)
 
         elif self.directions['6']:
-            self.switch_direction('6', '7')
+            if self.compare_transition('left', 'right', random_number):
+                self.switch_direction('6', '7')
+            elif self.compare_transition('left', 'horiz_None', random_number):
+                self.switch_direction('6', None)
 
         else:
-            pass
+            if self.compare_transition('horiz_None', 'left', random_number):
+                self.switch_direction(None, '6')
+            if self.compare_transition('horiz_None', 'right', random_number):
+                self.switch_direction(None, '7')
 
 
         # (possibly) switch from up, down or None
         if self.directions['4']:
-            self.switch_direction('4', '5')
-            #if random_number < self.vertical_transitions['up']['to_down']:
-                # switch from up to down 
-            #elif random_number < self.vertical_transitions['up']['to_None']:
-                # switch from up to None
-                #self.switch_direction('4', None)
+            if self.compare_transition('up', 'down', random_number):
+                self.switch_direction('4', '5')
+            elif self.compare_transition('up', 'vert_None', random_number):
+                self.switch_direction('4', None)
+
         elif self.directions['5']:
-            self.switch_direction('5', '4')
-            #if random_number < self.vertical_transitions['down']['to_up']:
-                # switch from down to up
-            #elif random_number < self.vertical_transitions['down']['to_None']:
-                # switch from down to None
-                #self.switch_direction('5', None)
+            if self.compare_transition('down', 'up', random_number):
+                self.switch_direction('5', '4')
+            elif self.compare_transition('down', 'vert_None', random_number):
+                self.switch_direction('5', None)
+
         else:
-            self.switch_direction(None, '4')
-            #if random_number < self.vertical_transitions['None']['to_up']:
-                # switch from None to up
-            #elif random_number < self.vertical_transitions['None']['to_down']:
-                # switch from None to down
-                #self.switch_direction(None, '5')
-
-
+            if self.compare_transition('vert_None', 'down', random_number):
+                self.switch_direction(None, '4')
+            elif self.compare_transition('vert_None', 'up', random_number):
+                self.switch_direction(None, '5')
 
 
         # attack when the `jump` cooldown is inactive
@@ -199,6 +215,7 @@ class StaticProbabilityTurtle(Turtle):
         done = False
 
         score = 0
+        no_change = 0
         while not done:
             # random integer used for state-transition decision making
             random_int = randint(0, 100)
@@ -208,7 +225,14 @@ class StaticProbabilityTurtle(Turtle):
             action = self.next_action(action, random_int)
             # take an action in the environment, and get the environmental info from that step
             _obs, _rew, done, _info = env.step(action)
+            if not _rew:
+                no_change +=1
+                if no_change > 10000:
+                    done = True
+            else:
+                no_change = 0
             score += _rew
+            print(score)
 
         self.reward = score
 

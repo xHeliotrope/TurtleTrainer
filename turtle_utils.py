@@ -26,6 +26,8 @@ class Direction:
 
         Arguments:
           - name (str): name of <Direction obj>
-          - probability (int): probability, so should be between 0 - 100
+          - probability (dict): has `start` and `end` keys, creating a numeric range
+                                which represent a probability
+                                so {'start': 13, 'end': 23} would be a 10 percent chance
         """
         self.transitions[name] = probability
