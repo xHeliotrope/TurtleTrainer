@@ -80,7 +80,7 @@ def evaluate_turtle(individual):
       - individual (<subclass of Turtle obj>) : a postgame turtle, to be evaluated
 
     Returns:
-      - (tuple): tuple with equal length of the weights
+      - (tuple): tuple with equal length of the weights (note the comma)
     """
     turtle = StaticProbabilityTurtle(file_handler, attribute_list=individual)
     env = retro.make(game=game_name)

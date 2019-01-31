@@ -63,6 +63,7 @@ class StaticProbabilityTurtle(Turtle):
         super().__init__(0, file_handler)
         # setup the cooldowns
         self.cooldowns = {}
+        self.transitions = transitions
         self.default_cooldowns = default_cooldowns
         for key, value in default_cooldowns.items():
             self.cooldowns[key] = value
@@ -93,7 +94,7 @@ class StaticProbabilityTurtle(Turtle):
                 new_direction = Direction(direction_name, direction_key)
                 for index, probability in enumerate(attribute_list.pop()):
                     new_direction.update_transitions(related_directions[index], probability)
-                self.transistions[new_direction["name"]] = new_direction
+                self.transitions[new_direction.name] = new_direction
 
 
     def switch_direction(self, current, future):
@@ -126,53 +127,39 @@ class StaticProbabilityTurtle(Turtle):
         self.cooldowns['jump'] -= 1
         self.cooldowns['attack'] -= 1
 
-
-        
-
-
         # (possibly) switch from right to left or left to right
         if self.directions['7']:
-
-            if random_number % self.horizontal_transitions['right']['to_left'] == 0:
-                # switch from right to left
-                self.switch_direction('7', '6')
+            self.switch_direction('7', '6')
 
         elif self.directions['6']:
-
-            if random_number % self.horizontal_transitions['left']['to_right'] == 0:
-                # switch from left to right
-                self.switch_direction('6', '7')
+            self.switch_direction('6', '7')
 
         else:
             pass
 
 
-
-
-
-
         # (possibly) switch from up, down or None
         if self.directions['4']:
-            if random_number < self.vertical_transitions['up']['to_down']:
+            self.switch_direction('4', '5')
+            #if random_number < self.vertical_transitions['up']['to_down']:
                 # switch from up to down 
-                self.switch_direction('4', '5')
-            elif random_number < self.vertical_transitions['up']['to_None']:
+            #elif random_number < self.vertical_transitions['up']['to_None']:
                 # switch from up to None
-                self.switch_direction('4', None)
+                #self.switch_direction('4', None)
         elif self.directions['5']:
-            if random_number < self.vertical_transitions['down']['to_up']:
+            self.switch_direction('5', '4')
+            #if random_number < self.vertical_transitions['down']['to_up']:
                 # switch from down to up
-                self.switch_direction('5', '4')
-            elif random_number < self.vertical_transitions['down']['to_None']:
+            #elif random_number < self.vertical_transitions['down']['to_None']:
                 # switch from down to None
-                self.switch_direction('5', None)
+                #self.switch_direction('5', None)
         else:
-            if random_number < self.vertical_transitions['None']['to_up']:
+            self.switch_direction(None, '4')
+            #if random_number < self.vertical_transitions['None']['to_up']:
                 # switch from None to up
-                self.switch_direction(None, '4')
-            elif random_number < self.vertical_transitions['None']['to_down']:
+            #elif random_number < self.vertical_transitions['None']['to_down']:
                 # switch from None to down
-                self.switch_direction(None, '5')
+                #self.switch_direction(None, '5')
 
 
 
