@@ -7,7 +7,7 @@ clean turtles
 class Direction:
     """For states and state transitioning
     """
-    def __init__(self, name, key, transitions):
+    def __init__(self, name, key, transitions={}):
         """Initially a direction only has a name
         Arguments:
           - name (str): name of the direction

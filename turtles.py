@@ -71,27 +71,10 @@ class StaticProbabilityTurtle(Turtle):
         if "attribute_list" in kwargs:
             self.update_directions(kwargs["attribute_list"])
 
-
-    @staticmethod
-    def prepare_kwargs(attribute_list):
-        """Takes a list of attributes from deap
-        and creates the necessary state transition variables in
-        the constructor for the StaticProbabilityTurtle
-
-        Arguments:
-          - (attribute_list): list of 0-100 probabilities for state transitions (e.g. up to down)
-
-        Returns:
-          - (dict): kwargs to be fed into StaticProbabilityTurtle constructor
-        """
-        the_kwargs = {}
-        return the_kwargs
-
-
     def update_directions(self, attribute_list):
         """Takes a list of attributes from deap
-        and creates the necessary state transition variables in
-        the constructor for the StaticProbabilityTurtle
+        and creates the necessary state transition variables
+        for the StaticProbabilityTurtle
 
         Arguments:
           - (attribute_list): list of 0-100 probabilities for state transitions (e.g. up to down)
@@ -99,17 +82,15 @@ class StaticProbabilityTurtle(Turtle):
         Returns:
           - (dict): kwargs to be fed into StaticProbabilityTurtle constructor
         """
-        from pprint import pprint
         self.to_jump = attribute_list.pop(0)
         self.to_attack = attribute_list.pop(0)
         for direction_set, directions in self.GAMEPAD_KEYS.items():
-            related_directions = direction.keys()
+            related_directions = list(directions.keys())
             for direction_name, direction_key in directions.items():
-                new_direction = Direction(name, gamepad_key)
+                new_direction = Direction(direction_name, direction_key)
                 for index, probability in enumerate(attribute_list.pop()):
                     new_direction.update_transitions(related_directions[index], probability)
 
-                pprint(Direction)
 
     def switch_direction(self, current, future):
         """switch directions from current to future
