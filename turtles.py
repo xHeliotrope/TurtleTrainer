@@ -34,6 +34,18 @@ class StaticProbabilityTurtle(Turtle):
     and the rewards are concrete
     which make this a good candidate for use in a genetic algorithm
     """
+    GAMEPAD_KEYS = {
+        "vertical": {
+            "up": 4,
+            "down": 5,
+            "vert_None": None
+        },
+        "horizontal": {
+            "left": 6,
+            "right": 7,
+            "horiz_None": None
+        }
+    }
     def __init__(self, file_handler, default_cooldowns={'jump': 10, 'attack': 10}, directions={'4':0,'5':0,'6':0,'7':0}, **kwargs):
         """initialize the Static Probability Bot
 
@@ -54,30 +66,11 @@ class StaticProbabilityTurtle(Turtle):
 
         self.directions = directions
 
-        # this is a template for the horizontal directions
-        # to use for defining state transitions
-        self.horizontal_transition_probability_template = {
-            'right': 0,
-            'left': 0,
-            'horiz_None': 0
-        }
-        self.vertical_transition_probability_template = {
-            'up': 0,
-            'down': 0,
-            'vert_None': 0
-        }
-
         self.to_attack = 5
         self.to_jump = 20
+        if "attribute_list" in kwargs:
+            self.update_directions(kwargs["attribute_list"])
 
-        if 'horizontal_transitions' in kwargs:
-            self.horizontal_transitions = kwargs['horizontal_transitions']
-        if 'vertical_transitions' in kwargs:
-            self.vertical_transitions = kwargs['vertical_transitions']
-        if 'to_jump' in kwargs:
-            self.to_jump = kwargs['to_jump']
-        if 'to_attack' in kwargs:
-            self.to_attack = kwargs['to_attack']
 
     @staticmethod
     def prepare_kwargs(attribute_list):
@@ -94,6 +87,29 @@ class StaticProbabilityTurtle(Turtle):
         the_kwargs = {}
         return the_kwargs
 
+
+    def update_directions(self, attribute_list):
+        """Takes a list of attributes from deap
+        and creates the necessary state transition variables in
+        the constructor for the StaticProbabilityTurtle
+
+        Arguments:
+          - (attribute_list): list of 0-100 probabilities for state transitions (e.g. up to down)
+
+        Returns:
+          - (dict): kwargs to be fed into StaticProbabilityTurtle constructor
+        """
+        from pprint import pprint
+        self.to_jump = attribute_list.pop(0)
+        self.to_attack = attribute_list.pop(0)
+        for direction_set, directions in self.GAMEPAD_KEYS.items():
+            related_directions = direction.keys()
+            for direction_name, direction_key in directions.items():
+                new_direction = Direction(name, gamepad_key)
+                for index, probability in enumerate(attribute_list.pop()):
+                    new_direction.update_transitions(related_directions[index], probability)
+
+                pprint(Direction)
 
     def switch_direction(self, current, future):
         """switch directions from current to future

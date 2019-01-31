@@ -8,15 +8,18 @@ class FileHandler:
     """Used for managing backup, mp4 and data logging files
     """
 
-    def __init__(self, filename=game_name+game_meta, file_number=0, video_dir='recording'):
+    def __init__(self, file_name=game_name+game_meta, file_number=0, video_path='recording/'):
         """set the file names
         and open up the logging file for logging
         """
-        self.backup = filename + filenumber '.bk2'
-        self.video = filename + filenumber '.mp4'
-        if video_dir:
-            self.backup = video_dir + '/' + self.backup
-            self.video = video_dir + '/' + self.video
+        self.backup = '{name}{number}{path}.bk2'.format(
+                name=file_name,
+                number=file_number,
+                path=video_path)
+        self.video = '{name}{number}{path}.mp4'.format(
+                name=file_name,
+                number=file_number,
+                path=video_path)
 
     def create_video(self):
         """create video file from replay

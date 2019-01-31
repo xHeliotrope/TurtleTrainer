@@ -88,12 +88,13 @@ def evaluate_turtle(individual):
         'attack': 10,
         'jump': 10
     }
-    from pprint import pprint
-    pprint(individual)
-    turtle = StaticProbabilityTurtle(file_handler)
+    #from pprint import pprint
+    #pprint(individual)
+    #StaticProbabilityTurtle.prepare_kwargs(individual)
+    turtle = StaticProbabilityTurtle(file_handler, attribute_list=individual)
     env = retro.make(game=game_name)
     env.reset()
-    print(turtle.horizontal_transitions)
+    #print(turtle.horizontal_transitions)
     turtle.run_simulation(env)
     return turtle.reward,
 
