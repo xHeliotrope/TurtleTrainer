@@ -8,7 +8,7 @@ class FileHandler:
     """Used for managing backup, mp4 and data logging files
     """
 
-    def __init__(self, file_name=game_name+game_meta, file_number=0, video_path='recording/'):
+    def __init__(self, file_name=game_name+game_meta, file_number=0, video_path='recordings/'):
         """set the file names
         and open up the logging file for logging
         """
@@ -20,12 +20,21 @@ class FileHandler:
                 name=file_name,
                 number=file_number,
                 path=video_path)
+        self.video_path = video_path
+        self.file_number = file_number
 
     def create_video(self):
         """create video file from replay
         """
         create_video_command = 'python3 -m retro.scripts.playback_movie ' + self.backup
         create_video_proc = Popen(create_video_command, shell=True, stdout=PIPE) 
+        create_video_proc.wait()
+
+    def create_video_dir(self):
+        """create video file from replay
+        """
+        create_dir_command = 'mkdir ' + self.video_path + str(self.file_number)
+        create_video_proc = Popen(create_dir_command, shell=True, stdout=PIPE) 
         create_video_proc.wait()
 
     def rm_backup(self):

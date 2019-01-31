@@ -232,7 +232,6 @@ class StaticProbabilityTurtle(Turtle):
             else:
                 no_change = 0
             score += _rew
-            print(score)
 
         self.reward = score
 

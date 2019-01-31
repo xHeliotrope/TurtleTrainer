@@ -81,9 +81,11 @@ def evaluate_turtle(individual):
     Returns:
       - (tuple): tuple with equal length of the weights (note the comma)
     """
-    file_handler = FileHandler(file_number=random.randint(0, 1000000))
-    turtle = StaticProbabilityTurtle(file_handler, attribute_list=individual)
-    env = retro.make(game=game_name)
+    file_handl = FileHandler(file_number=random.randint(0, 1000000))
+    file_handl.create_video_dir()
+    turtle = StaticProbabilityTurtle(file_handl, attribute_list=individual)
+
+    env = retro.make(game=game_name, record='.' + file_handl.video_path + str(file_handl.file_number))
     env.reset()
 
     turtle.run_simulation(env)
@@ -100,8 +102,11 @@ def main():
     fitnesses = list(map(toolbox.evaluate, pop))
     for ind, fit in zip(pop, fitnesses):
         ind.fitness.values = fit
+        print(ind, fit)
 
     fits = [ind.fitness.values[0] for ind in pop]
     return pop, fitnesses
 
-main()
+stuff = main()
+from pprint import pprint
+pprint(stuff)
