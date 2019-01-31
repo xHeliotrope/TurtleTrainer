@@ -1,11 +1,18 @@
-============
-NES GAME BOT
-============
+# NES GAME BOT
+##### ==============================
 
-Technologies Used:
+#### Technologies Used:
+ * Genetic Algorithms (deap, numpy)
+ * Reinforcement Learning (retro-gym)
+
+#### Still in the works
  * Wavelets (pywavelets, opencv) 
- * CNNs (pytorch, numpy)
- * OpenAI retro-gym
+ * Convolutional Nets for Image Processing (pytorch)
+
+NOTE: this project is under active developement
+
+
+The following is FAke nEWS:
 
 ## Wavelets
 Wavelets are like waves, but they are zero most of the place. 

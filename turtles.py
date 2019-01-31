@@ -27,12 +27,16 @@ class Turtle:
 
 class StaticProbabilityTurtle(Turtle):
     """hard coded probability-based agent
-    probability checks could be standardized
-    sometimes probabilities are evaluated if a number is less than a random number
-    other times its if a number modulo another number is 0
-    not very sophisticated, but the state transition numbers are configurable
-    and the rewards are concrete
-    which make this a good candidate for use in a genetic algorithm
+    =======================================
+    This turtle has a probability (non-zero integer)
+    of transitioning from on state to another
+    (e.g. 'moving right' to 'moving left' 
+    or 
+    'jumping' to 'moving right and down')
+
+    not very sophisticated,
+    but the rewards are concrete and comparable (game score)
+    which make this a candidate for use in a genetic algorithm
     """
     GAMEPAD_KEYS = {
         "vertical": {
