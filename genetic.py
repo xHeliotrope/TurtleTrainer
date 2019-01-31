@@ -72,7 +72,6 @@ toolbox.register(
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
 # for the saving of videos and backups
-iteration = 0
 def evaluate_turtle(individual):
     """evaluates the success of a given turtlebot
 
@@ -82,8 +81,7 @@ def evaluate_turtle(individual):
     Returns:
       - (tuple): tuple with equal length of the weights (note the comma)
     """
-    iteration += 1
-    file_handler = FileHandler(file_number=iteration)
+    file_handler = FileHandler(file_number=random.randint(0, 1000000))
     turtle = StaticProbabilityTurtle(file_handler, attribute_list=individual)
     env = retro.make(game=game_name)
     env.reset()

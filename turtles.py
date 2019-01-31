@@ -131,6 +131,10 @@ class StaticProbabilityTurtle(Turtle):
         self.cooldowns['jump'] -= 1
         self.cooldowns['attack'] -= 1
 
+        poss_trans = list(self.transitions.keys())
+        for x in poss_trans:
+            print(self.transitions[x])
+
         # (possibly) switch from right to left or left to right
         if self.directions['7']:
             self.switch_direction('7', '6')
