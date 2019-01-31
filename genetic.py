@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-from functools import reduce
 import random
 import retro
 
@@ -35,11 +34,10 @@ def random_tuple(l, sigma):
     # start with 2 numbers to 'bookend' the list
     numrs = [0, sigma]
     random_list = []
-    # populate numrs with l integers, that are evenly distributed between 0 and sigma
+    # populate numrs with l integers, that are randomly distributed between 0 and sigma
     [ numrs.append(random.randint(0, sigma)) for _ in range(l - 1) ]
     numrs.sort()
-    # not actually reducing, more lambda-ing to populate random_list
-    # might not actually need a reduce here
+    # populate random_list
     random_list = [numrs[index+1] - numrs[index] for index in range(l)]
     return tuple(random_list)
 
@@ -84,17 +82,10 @@ def evaluate_turtle(individual):
     Returns:
       - (tuple): tuple with equal length of the weights
     """
-    cooldowns = {
-        'attack': 10,
-        'jump': 10
-    }
-    #from pprint import pprint
-    #pprint(individual)
-    #StaticProbabilityTurtle.prepare_kwargs(individual)
     turtle = StaticProbabilityTurtle(file_handler, attribute_list=individual)
     env = retro.make(game=game_name)
     env.reset()
-    #print(turtle.horizontal_transitions)
+
     turtle.run_simulation(env)
     return turtle.reward,
 
