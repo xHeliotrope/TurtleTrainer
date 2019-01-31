@@ -8,13 +8,15 @@ class FileHandler:
     """Used for managing backup, mp4 and data logging files
     """
 
-    def __init__(self, filename=game_name+game_meta, data_file='gamedata.txt'):
+    def __init__(self, filename=game_name+game_meta, file_number=0, video_dir='recording'):
         """set the file names
         and open up the logging file for logging
         """
-        self.backup = filename + '.bk2'
-        self.video = filename + '.mp4'
-        self.f = open(data_file, 'w+')
+        self.backup = filename + filenumber '.bk2'
+        self.video = filename + filenumber '.mp4'
+        if video_dir:
+            self.backup = video_dir + '/' + self.backup
+            self.video = video_dir + '/' + self.video
 
     def create_video(self):
         """create video file from replay
@@ -27,7 +29,7 @@ class FileHandler:
         """remove all backup files
         """
         try:
-            rm_file_proc = Popen('rm *.bk2', shell=True, stdout=PIPE)
+            rm_file_proc = Popen('rm ' + self.backup, shell=True, stdout=PIPE)
             rm_file_proc.wait()
         except FileNotFoundError:
             pass
@@ -36,7 +38,7 @@ class FileHandler:
         """remove all video files
         """
         try:
-            rm_file_proc = Popen('rm *.mp4', shell=True, stdout=PIPE)
+            rm_file_proc = Popen('rm ' + self.video, shell=True, stdout=PIPE)
             rm_file_proc.communicate()
         except FileNotFoundError:
             pass
@@ -50,13 +52,3 @@ class FileHandler:
         except:
             play_replay = Popen('xdg-open ' + self.video, shell=True, stdout=PIPE)
             play_replay.wait()
-
-    def log_state(self, result):
-        """log the data of each action in the game
-
-        Arguments:
-          - result(str): action + reward string. looks like `[0,0,0,1,0,0,0,0,0,200]` currently
-                         (key presses + last position is the reward result)
-        """
-        self.f.write(result + '\n')
-        

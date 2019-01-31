@@ -11,16 +11,19 @@ for reference, the actions agents use for NES gamepad are:
   8 - "a"
 """
 from random import randint
+
 import numpy as np
 
+from turtle_utils import Direction
 
 class Turtle:
     """base class for bots to be run using the 'deap' genetic algorithm library
     """
-    def __init__(self, reward):
+    def __init__(self, reward, file_handler):
         """every turtle needs a reward
         """
         self.reward = reward
+        self.file_handler = file_handler
 
 class StaticProbabilityTurtle(Turtle):
     """hard coded probability-based agent
@@ -42,48 +45,26 @@ class StaticProbabilityTurtle(Turtle):
           - **kwargs (dict): not required params (direction/attack/jump probabilities)
         """
         # initial reward is 0
-        super().__init__(0)
+        super().__init__(0, file_handler)
         # setup the cooldowns
         self.cooldowns = {}
         self.default_cooldowns = default_cooldowns
         for key, value in default_cooldowns.items():
             self.cooldowns[key] = value
 
-        self.file_handler = file_handler
         self.directions = directions
 
-        self.horizontal_transitions = {
-            'right': {
-                'to_left': 20
-            },
-            'left': {
-                'to_right': 10
-            }
+        # this is a template for the horizontal directions
+        # to use for defining state transitions
+        self.horizontal_transition_probability_template = {
+            'right': 0,
+            'left': 0,
+            'horiz_None': 0
         }
-
-        # theres probably a better way to do this,
-        # but these probabilities are calculated in like a cumulative way
-        # so if `to_down` is '5', that means random numbers 5 and under will 
-        # trigger a direction change to `down`
-        # and if `to_None is '10', that means random numbers 10 and under will
-        # trigger a direction change to `None`
-        # which means that although `to_down` and `to_None` are different values here,
-        # they each have the same probability of occuring
-        # since `to_down` will match numbers 0,1,2,3,4
-        # and `to_None` will match numbers 5,6,7,8,9
-        self.vertical_transitions = {
-            'up': {
-                'to_down': 5,
-                'to_None': 10
-            },
-            'down': {
-                'to_up': 5,
-                'to_None': 10
-            },
-            'None': {
-                'to_up': 5,
-                'to_down': 10
-            }
+        self.vertical_transition_probability_template = {
+            'up': 0,
+            'down': 0,
+            'vert_None': 0
         }
 
         self.to_attack = 5
@@ -213,8 +194,6 @@ class StaticProbabilityTurtle(Turtle):
             action = self.next_action(action, random_int)
             # take an action in the environment, and get the environmental info from that step
             _obs, _rew, done, _info = env.step(action)
-            # next 3 lines write the action that was taken and the reward from that action to a file
-
             score += _rew
 
         self.reward = score
