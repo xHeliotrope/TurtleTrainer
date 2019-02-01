@@ -45,8 +45,7 @@ def random_tuple(l, sigma):
 # each is a state transition variable, with values 0 -> 100 being a percentage
 toolbox = base.Toolbox()
 
-toolbox.register("attr_jump", random.randint, 0, 100)
-toolbox.register("attr_attack", random.randint, 0, 100)
+toolbox.register("attr_jump_and_attack", random_tuple, 2, 100)
 toolbox.register("attr_None_vert", random_tuple, 3, 100)
 toolbox.register("attr_None_horiz", random_tuple, 3, 100)
 toolbox.register("attr_left", random_tuple, 3, 100)
@@ -60,8 +59,7 @@ toolbox.register(
         tools.initCycle,
         creator.Individual,
         (
-            toolbox.attr_jump,
-            toolbox.attr_attack,
+            toolbox.attr_jump_and_attack,
             toolbox.attr_None_vert,
             toolbox.attr_None_horiz,
             toolbox.attr_left,

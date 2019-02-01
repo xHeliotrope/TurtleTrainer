@@ -38,7 +38,7 @@ class StaticProbabilityTurtle(Turtle):
     but the rewards are concrete and comparable (game score)
     which make this a candidate for use in a genetic algorithm
     """
-    GAMEPAD_KEYS = {
+    GAMEPAD_DIRS = {
         "vertical": {
             "up": 4,
             "down": 5,
@@ -90,9 +90,19 @@ class StaticProbabilityTurtle(Turtle):
         Returns:
           - (dict): kwargs to be fed into StaticProbabilityTurtle constructor
         """
-        self.to_jump = attribute_list.pop(0)
-        self.to_attack = attribute_list.pop(0)
-        for direction_set, directions in self.GAMEPAD_KEYS.items():
+        jump_and_attack = attribute_list.pop(0)
+        less_than_fifty = 0
+        if jump_and_attack[0] < 50:
+            less_than_fifty = jump_and_attack[0]
+        else:
+            less_than_fifty = jump_and_attack[1]
+
+        self.to_jump = {'start': 0, 'end': less_than_fifty}
+        self.to_attack = {'start': less_than_fifty, 'end':randint(less_than_fifty, 100)}
+        print(self.to_jump)
+        print(self.to_attack)
+
+        for direction_set, directions in self.GAMEPAD_DIRS.items():
             related_directions = list(directions.keys())
             # this is needed so that the probabilities form a range
             for direction_name, direction_key in directions.items():
@@ -100,16 +110,17 @@ class StaticProbabilityTurtle(Turtle):
                 base_probability = 0
                 for index, probability in enumerate(attribute_list.pop()):
                     new_direction.update_transitions(
-                            related_directions[index], 
-                            {
-                                'start': base_probability, 
-                                'end': base_probability + probability - 1
-                            }
-                        )
+                        related_directions[index], 
+                        {
+                            'start': base_probability, 
+                            'end': base_probability + probability - 1
+                        }
+                    )
 
                     # update the base value for the next range
                     base_probability = base_probability + probability
                 self.transitions[new_direction.name] = new_direction
+
 
     def switch_direction(self, current, future):
         """switch directions from current to future
@@ -189,13 +200,13 @@ class StaticProbabilityTurtle(Turtle):
 
 
         # attack when the `jump` cooldown is inactive
-        if random_number < self.to_attack and self.cooldowns['jump'] <= 0:
+        if self.to_attack['start'] <= random_number <= self.to_attack['end'] and self.cooldowns['jump'] <= 0:
             action[0] = 1
             # prevent special attacks
             self.cooldowns['attack'] = 10
 
         # jump when the `attack` cooldown is inactive
-        if random_number < self.to_jump and self.cooldowns['attack'] <= 0:
+        if self.to_jump['start'] <= random_number <= self.to_jump['end'] and self.cooldowns['attack'] <= 0:
             action[8] = 1
             self.cooldowns['jump'] = 10
 
