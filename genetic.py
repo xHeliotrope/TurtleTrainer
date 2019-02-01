@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 import random
+from pprint import pprint
+
 import retro
 
 from deap import algorithms
@@ -88,12 +90,15 @@ def evaluate_turtle(individual):
         path=file_handl.video_path,
         number=str(file_handl.file_number)
     )
-    print(record_file)
 
     env = retro.make(game=game_name, record=record_file)
     env.reset()
 
     turtle.run_simulation(env)
+    print(file_handl.file_number)
+    print(turtle.reward)
+    print(turtle.__dict__)
+    print('==============')
     return turtle.reward,
 
 toolbox.register("evaluate", evaluate_turtle)
@@ -102,16 +107,14 @@ toolbox.register("mutate", tools.mutFlipBit, indpb=0.05)
 toolbox.register("select", tools.selTournament, tournsize=3)
 
 def main():
-    pop = toolbox.population(n=10)
+    pop = toolbox.population(n=100)
     # evaluate the entire population
     fitnesses = list(map(toolbox.evaluate, pop))
     for ind, fit in zip(pop, fitnesses):
         ind.fitness.values = fit
-        print(ind, fit)
 
     fits = [ind.fitness.values[0] for ind in pop]
     return pop, fitnesses
 
 stuff = main()
-from pprint import pprint
 pprint(stuff)
