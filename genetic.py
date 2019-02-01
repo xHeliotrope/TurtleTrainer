@@ -84,8 +84,13 @@ def evaluate_turtle(individual):
     file_handl = FileHandler(file_number=random.randint(0, 1000000))
     file_handl.create_video_dir()
     turtle = StaticProbabilityTurtle(file_handl, attribute_list=individual)
+    record_file = './{path}{number}'.format(
+        path=file_handl.video_path,
+        number=str(file_handl.file_number)
+    )
+    print(record_file)
 
-    env = retro.make(game=game_name, record='.' + file_handl.video_path + str(file_handl.file_number))
+    env = retro.make(game=game_name, record=record_file)
     env.reset()
 
     turtle.run_simulation(env)

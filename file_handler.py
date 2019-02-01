@@ -12,11 +12,11 @@ class FileHandler:
         """set the file names
         and open up the logging file for logging
         """
-        self.backup = '{name}{number}{path}.bk2'.format(
+        self.backup = '{path}{number}/{name}.bk2'.format(
                 name=file_name,
                 number=file_number,
                 path=video_path)
-        self.video = '{name}{number}{path}.mp4'.format(
+        self.video = '{path}{number}/{name}.mp4'.format(
                 name=file_name,
                 number=file_number,
                 path=video_path)
