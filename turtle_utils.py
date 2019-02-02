@@ -18,6 +18,9 @@ class Direction:
         self.key = key
         self.transitions = transitions
 
+    def __repr__(self):
+        return 'Directions: ' + str(self.transitions)
+
     def update_transitions(self, name, probability):
         """Since not all connected states might be defined at initialization
         this method sets the connected states after initialization
