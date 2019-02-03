@@ -94,18 +94,17 @@ def evaluate_turtle(individual):
 
     turtle.run_simulation(env)
     print(file_handl.file_number)
+    print('==============')
     print(turtle.reward)
-    print(turtle.__dict__)
     print('==============')
     return turtle.reward,
 
 toolbox.register("evaluate", evaluate_turtle)
 toolbox.register("mate", tools.cxTwoPoint)
-toolbox.register("mutate", tools.mutFlipBit, indpb=0.05)
+toolbox.register("mutate", tools.mutShuffleIndexes, indpb=0.05)
 toolbox.register("select", tools.selTournament, tournsize=3)
 
 def main():
-    pop = toolbox.population(n=100)
     # evaluate the entire population
     fitnesses = list(map(toolbox.evaluate, pop))
     for ind, fit in zip(pop, fitnesses):
@@ -114,5 +113,23 @@ def main():
     fits = [ind.fitness.values[0] for ind in pop]
     return pop, fitnesses
 
-stuff = main()
-pprint(stuff)
+NGEN=40
+for gen in range(NGEN):
+    population = toolbox.population(n=10)
+    offspring = algorithms.varAnd(population, toolbox, cxpb=0.5, mutpb=0.1)
+    fits = toolbox.map(toolbox.evaluate, offspring)
+    for fit, ind in zip(fits, offspring):
+        ind.fitness.values = fit
+    print('offspring: ')
+    print(offspring)
+    population = toolbox.select(offspring, k=len(population))
+    print('population: ')
+    print(population)
+    top_five = tools.selBest(population, k=5)
+    print(top_five)
+
+
+top10 = tools.selBest(population, k=10)
+print(top10)
+
+# stuff = main()
