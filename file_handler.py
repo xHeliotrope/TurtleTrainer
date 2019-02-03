@@ -30,6 +30,18 @@ class FileHandler:
         create_video_proc = Popen(create_video_command, shell=True, stdout=PIPE) 
         create_video_proc.wait()
 
+    def write_turtle_stats(self, stats):
+        """write the turtle stats into the directory with its backup file
+        """
+        with open(self.video_path + '/' + str(self.file_number) + '/stats.txt', 'w+') as statfile:
+            statfile.write(str(stats))
+
+    def write_turtle_score(self, reward):
+        """write the turtle score into the directory with its backup file
+        """
+        with open(self.video_path + '/' + str(self.file_number) + '/' + str(reward), 'w+') as rewardfile:
+            rewardfile.write('boop')
+
     def create_video_dir(self):
         """create video file from replay
         """

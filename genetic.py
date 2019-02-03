@@ -81,8 +81,9 @@ def evaluate_turtle(individual):
     Returns:
       - (tuple): tuple with equal length of the weights (note the comma)
     """
-    file_handl = FileHandler(file_number=random.randint(0, 1000000))
+    file_handl = FileHandler(file_number=random.randint(0, 10000000))
     file_handl.create_video_dir()
+    file_handl.write_turtle_stats(individual)
     turtle = StaticProbabilityTurtle(file_handl, attribute_list=individual)
     record_file = './{path}{number}'.format(
         path=file_handl.video_path,
@@ -97,6 +98,7 @@ def evaluate_turtle(individual):
     print('==============')
     print(turtle.reward)
     print('==============')
+    file_handl.write_turtle_score(turtle.reward)
     return turtle.reward,
 
 toolbox.register("evaluate", evaluate_turtle)
@@ -113,9 +115,11 @@ def main():
     fits = [ind.fitness.values[0] for ind in pop]
     return pop, fitnesses
 
-NGEN=40
+
+population = toolbox.population(n=20)
+
+NGEN=20
 for gen in range(NGEN):
-    population = toolbox.population(n=10)
     offspring = algorithms.varAnd(population, toolbox, cxpb=0.5, mutpb=0.1)
     fits = toolbox.map(toolbox.evaluate, offspring)
     for fit, ind in zip(fits, offspring):

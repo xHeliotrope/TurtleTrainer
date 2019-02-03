@@ -13,9 +13,10 @@ creator.create("Individual", list, fitness=creator.StuffMax)
 toolbox = base.Toolbox()
 
 # Attribute generator
-toolbox.register("attr_bool", random.randint, 0, 1)
+toolbox.register("attr_int", random.randint, 0, 100)
 # Structure initializers
-toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.attr_bool, n=100)
+toolbox.register("individual", tools.initRepeat, creator.Individual,
+toolbox.attr_int, n=100)
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
 def evalOneMax(individual):
