@@ -53,7 +53,6 @@ toolbox.register("attr_right", random_tuple, 3, 100)
 toolbox.register("attr_up", random_tuple, 3, 100)
 toolbox.register("attr_down", random_tuple, 3, 100)
 
-
 toolbox.register(
         "individual",
         tools.initCycle,
@@ -71,6 +70,7 @@ toolbox.register(
 
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
+GEN = 0
 # for the saving of videos and backups
 def evaluate_turtle(individual):
     """evaluates the success of a given turtlebot
@@ -81,8 +81,9 @@ def evaluate_turtle(individual):
     Returns:
       - (tuple): tuple with equal length of the weights (note the comma)
     """
-    file_handl = FileHandler(file_number=random.randint(0, 1000000))
+    file_handl = FileHandler(generation=GEN, file_number=random.randint(0, 10000000))
     file_handl.create_video_dir()
+    file_handl.write_turtle_stats(individual)
     turtle = StaticProbabilityTurtle(file_handl, attribute_list=individual)
     record_file = './{path}{number}'.format(
         path=file_handl.video_path,
@@ -94,18 +95,18 @@ def evaluate_turtle(individual):
 
     turtle.run_simulation(env)
     print(file_handl.file_number)
-    print(turtle.reward)
-    print(turtle.__dict__)
     print('==============')
+    print(turtle.reward)
+    print('==============')
+    file_handl.write_turtle_score(turtle.reward)
     return turtle.reward,
 
 toolbox.register("evaluate", evaluate_turtle)
 toolbox.register("mate", tools.cxTwoPoint)
-toolbox.register("mutate", tools.mutFlipBit, indpb=0.05)
+toolbox.register("mutate", tools.mutShuffleIndexes, indpb=0.05)
 toolbox.register("select", tools.selTournament, tournsize=3)
 
 def main():
-    pop = toolbox.population(n=100)
     # evaluate the entire population
     fitnesses = list(map(toolbox.evaluate, pop))
     for ind, fit in zip(pop, fitnesses):
@@ -114,5 +115,31 @@ def main():
     fits = [ind.fitness.values[0] for ind in pop]
     return pop, fitnesses
 
-stuff = main()
-pprint(stuff)
+
+population = toolbox.population(n=20)
+
+NGEN=20
+for gen in range(NGEN):
+    GEN = gen
+    offspring = algorithms.varAnd(population, toolbox, cxpb=0.5, mutpb=0.1)
+    fits = toolbox.map(toolbox.evaluate, offspring)
+    for fit, ind in zip(fits, offspring):
+        ind.fitness.values = fit
+    print('offspring: ')
+    print(offspring)
+    population = toolbox.select(offspring, k=len(population))
+    print('population: ')
+    print(population)
+    top_five = tools.selBest(population, k=5)
+    print('all offspring fitness:')
+    for offs in offspring:
+        print(offs.fitness.values)
+
+    print('top five fitness:')
+    for topper in top_five:
+        print(topper.fitness.values)
+
+top10 = tools.selBest(population, k=10)
+print(top10)
+
+# stuff = main()

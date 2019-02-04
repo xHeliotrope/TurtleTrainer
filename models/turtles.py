@@ -90,7 +90,7 @@ class StaticProbabilityTurtle(Turtle):
         Returns:
           - (dict): kwargs to be fed into StaticProbabilityTurtle constructor
         """
-        jump_and_attack = attribute_list.pop(0)
+        jump_and_attack = attribute_list[0]
         less_than_fifty = 0
         if jump_and_attack[0] < 50:
             less_than_fifty = jump_and_attack[0]
@@ -99,8 +99,6 @@ class StaticProbabilityTurtle(Turtle):
 
         self.to_jump = {'start': 0, 'end': less_than_fifty}
         self.to_attack = {'start': less_than_fifty, 'end':randint(less_than_fifty, 100)}
-        print(self.to_jump)
-        print(self.to_attack)
 
         for direction_set, directions in self.GAMEPAD_DIRS.items():
             related_directions = list(directions.keys())
@@ -108,18 +106,19 @@ class StaticProbabilityTurtle(Turtle):
             for direction_name, direction_key in directions.items():
                 new_direction = Direction(direction_name, direction_key)
                 base_probability = 0
-                for index, probability in enumerate(attribute_list.pop()):
-                    new_direction.update_transitions(
-                        related_directions[index], 
-                        {
-                            'start': base_probability, 
-                            'end': base_probability + probability - 1
-                        }
-                    )
+                for attribute in attribute_list[1:]:
+                    for index, probability in enumerate(attribute):
+                        new_direction.update_transitions(
+                            related_directions[index],
+                            {
+                                'start': base_probability,
+                                'end': base_probability + probability - 1
+                            }
+                        )
 
-                    # update the base value for the next range
-                    base_probability = base_probability + probability
-                self.transitions[new_direction.name] = new_direction
+                        # update the base value for the next range
+                        base_probability = base_probability + probability
+                    self.transitions[new_direction.name] = new_direction
 
 
     def switch_direction(self, current, future):
