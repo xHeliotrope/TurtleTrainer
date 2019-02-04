@@ -53,7 +53,6 @@ toolbox.register("attr_right", random_tuple, 3, 100)
 toolbox.register("attr_up", random_tuple, 3, 100)
 toolbox.register("attr_down", random_tuple, 3, 100)
 
-
 toolbox.register(
         "individual",
         tools.initCycle,
@@ -71,6 +70,7 @@ toolbox.register(
 
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
+GEN = 0
 # for the saving of videos and backups
 def evaluate_turtle(individual):
     """evaluates the success of a given turtlebot
@@ -81,7 +81,7 @@ def evaluate_turtle(individual):
     Returns:
       - (tuple): tuple with equal length of the weights (note the comma)
     """
-    file_handl = FileHandler(file_number=random.randint(0, 10000000))
+    file_handl = FileHandler(generation=GEN, file_number=random.randint(0, 10000000))
     file_handl.create_video_dir()
     file_handl.write_turtle_stats(individual)
     turtle = StaticProbabilityTurtle(file_handl, attribute_list=individual)
@@ -120,6 +120,7 @@ population = toolbox.population(n=20)
 
 NGEN=20
 for gen in range(NGEN):
+    GEN = gen
     offspring = algorithms.varAnd(population, toolbox, cxpb=0.5, mutpb=0.1)
     fits = toolbox.map(toolbox.evaluate, offspring)
     for fit, ind in zip(fits, offspring):
@@ -130,8 +131,13 @@ for gen in range(NGEN):
     print('population: ')
     print(population)
     top_five = tools.selBest(population, k=5)
-    print(top_five)
+    print('all offspring fitness:')
+    for offs in offspring:
+        print(offs.fitness.values)
 
+    print('top five fitness:')
+    for topper in top_five:
+        print(topper.fitness.values)
 
 top10 = tools.selBest(population, k=10)
 print(top10)
