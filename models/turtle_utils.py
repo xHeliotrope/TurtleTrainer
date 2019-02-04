@@ -3,7 +3,6 @@ to keep turtles.py clean
 clean turtles
 """
 
-
 class Direction:
     """For states and state transitioning
     """
