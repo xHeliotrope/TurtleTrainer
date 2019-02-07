@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import random
-from pprint import pprint
 
 import retro
 
@@ -9,7 +8,8 @@ from deap import base
 from deap import creator
 from deap import tools
 
-from turtles import StaticProbabilityTurtle
+from model.state_machine_turtle import StateMachineTurtle
+from model.neural_turtle import NeuralTurtle
 from file_handler import FileHandler
 
 # constants for crossing and mating individuals
