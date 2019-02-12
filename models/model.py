@@ -1,20 +1,30 @@
 import torch.nn as nn
 import torch.nn.functional as F
 
-class Model(nn.Module):
+class DeepQNetwork(nn.Module):
+    """inspired by https://www.youtube.com/watch?v=1XX6N-Gq7Tc
+    """
     def __init__(self):
-        super(Model, self).__init__()
-        self.conv1 = nn.Conv2d(1, 20, kernel_size=5)
-        self.conv2 = nn.Conv2d(20, 20, kernel_size=5)
-        self.conv2_drop = nn.Dropout2d()
-        self.fc1 = Linear(320, 50)
-        self.fc2 = Linear(50, 10)
+        super(DeepQNetwork, self).__init__()
+        self.conv1 = nn.Conv2d(1, 32, 8, stride=4, padding=1)
+        self.conv2 = nn.Conv2d(32, 64, 4, stride=2)
+        self.conv3 = nn.Conv2d(64, 128, 3)
+        self.fc1 = nn.Linear(128*19*8, 512)
+        self.fc2 = nn.Linear(512, 6)
 
-    def forward(self, x):
-        x = F.relu(F.max_pool2d(self.conv1(x), 2))
-        x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2(x), 2)))
-        x = x.view(-1, 320)
-        x = F.relu(self.fc1(x))
-        x = F.dropout(x, training=self.training)
-        x = self.fc2(x)
-        return F.log_softmax(x, dim=1)
+        self.optimizer = optim.RMSprop(self.parameters(), lr=ALPHA)
+        self.loss = nn.MSELoss()
+        self.device = T.device('cuda:0' if T.cuda.is_available() else 'cpu')
+        self.to(self.device)
+
+    def forward(self, observation):
+        observation = T.Tensor(observation).to(self.device)
+        observation = observation.view(-1, 1, 185, 95)
+        observation = F.relu(self.conv1(observation))
+        observation = F.relu(self.conv2(observation))
+        observation = F.relu(self.conv3(observation))
+        observation = observation.view(-1, 128*19*8)
+        observation = F.relu(self.fc1(observation))
+
+        actions = self.fc2(observation)
+        return actions
