@@ -3,6 +3,16 @@ to keep turtles.py clean
 clean turtles
 """
 
+class Turtle:
+    """base class for bots to be run using the 'deap' genetic algorithm library
+    """
+    def __init__(self, reward, file_handler):
+        """every turtle needs a reward
+        """
+        self.reward = reward
+        self.file_handler = file_handler
+
+
 class Direction:
     """For states and state transitioning
     """

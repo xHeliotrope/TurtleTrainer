@@ -1,7 +1,7 @@
 import torch.nn as nn
 import torch.nn.functional as F
 
-class DeepQNetwork(nn.Module):
+class DeepQTurtle(nn.Module):
     """inspired by https://www.youtube.com/watch?v=1XX6N-Gq7Tc
     """
     def __init__(self):

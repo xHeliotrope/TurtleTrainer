@@ -14,18 +14,10 @@ from random import randint
 
 import numpy as np
 
-from turtle_utils import Direction
+from . import Direction
+from . import Turtle
 
-class Turtle:
-    """base class for bots to be run using the 'deap' genetic algorithm library
-    """
-    def __init__(self, reward, file_handler):
-        """every turtle needs a reward
-        """
-        self.reward = reward
-        self.file_handler = file_handler
-
-class StaticProbabilityTurtle(Turtle):
+class StateMachineTurtle(Turtle):
     """hard coded probability-based agent
     =======================================
     This turtle has a probability (non-zero integer)
