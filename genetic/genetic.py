@@ -9,7 +9,7 @@ from deap import creator
 from deap import tools
 
 from model.state_machine_turtle import StateMachineTurtle
-from model.neural_turtle import NeuralTurtle
+from model.neural_turtle import DeepQTurtle
 from file_handler import FileHandler
 
 # constants for crossing and mating individuals
@@ -41,7 +41,7 @@ def random_tuple(l, sigma):
     random_list = [numrs[index+1] - numrs[index] for index in range(l)]
     return tuple(random_list)
 
-# the 8 attributes a StaticProbabilityTurtle Individual needs to be configured
+# the 8 attributes a StateMachineTurtle Individual needs to be configured
 # each is a state transition variable, with values 0 -> 100 being a percentage
 toolbox = base.Toolbox()
 
@@ -84,7 +84,7 @@ def evaluate_turtle(individual):
     file_handl = FileHandler(generation=GEN, file_number=random.randint(0, 10000000))
     file_handl.create_video_dir()
     file_handl.write_turtle_stats(individual)
-    turtle = StaticProbabilityTurtle(file_handl, attribute_list=individual)
+    turtle = StateMachineTurtle(file_handl, attribute_list=individual)
     record_file = './{path}{number}'.format(
         path=file_handl.video_path,
         number=str(file_handl.file_number)
@@ -107,39 +107,26 @@ toolbox.register("mutate", tools.mutShuffleIndexes, indpb=0.05)
 toolbox.register("select", tools.selTournament, tournsize=3)
 
 def main():
-    # evaluate the entire population
-    fitnesses = list(map(toolbox.evaluate, pop))
-    for ind, fit in zip(pop, fitnesses):
-        ind.fitness.values = fit
+    population = toolbox.population(n=20)
+    ngen=20
+    for gen in range(ngen):
+        gen = gen
+        offspring = algorithms.varAnd(population, toolbox, cxpb=0.5, mutpb=0.1)
+        fits = toolbox.map(toolbox.evaluate, offspring)
+        for fit, ind in zip(fits, offspring):
+            ind.fitness.values = fit
+        print('offspring: ')
+        print(offspring)
+        population = toolbox.select(offspring, k=len(population))
+        print('population: ')
+        print(population)
+        top_five = tools.selbest(population, k=5)
+        print('all offspring fitness:')
+        for offs in offspring:
+            print(offs.fitness.values)
 
-    fits = [ind.fitness.values[0] for ind in pop]
-    return pop, fitnesses
+        print('top five fitness:')
+        for topper in top_five:
+            print(topper.fitness.values)
 
-
-population = toolbox.population(n=20)
-
-NGEN=20
-for gen in range(NGEN):
-    GEN = gen
-    offspring = algorithms.varAnd(population, toolbox, cxpb=0.5, mutpb=0.1)
-    fits = toolbox.map(toolbox.evaluate, offspring)
-    for fit, ind in zip(fits, offspring):
-        ind.fitness.values = fit
-    print('offspring: ')
-    print(offspring)
-    population = toolbox.select(offspring, k=len(population))
-    print('population: ')
-    print(population)
-    top_five = tools.selBest(population, k=5)
-    print('all offspring fitness:')
-    for offs in offspring:
-        print(offs.fitness.values)
-
-    print('top five fitness:')
-    for topper in top_five:
-        print(topper.fitness.values)
-
-top10 = tools.selBest(population, k=10)
-print(top10)
-
-# stuff = main()
+    top10 = tools.selbest(population, k=10)

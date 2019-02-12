@@ -44,7 +44,7 @@ class StateMachineTurtle(Turtle):
     }
 
     def __init__(self, file_handler, transitions={}, default_cooldowns={'jump': 10, 'attack': 10}, directions={'4':0,'5':0,'6':0,'7':0}, **kwargs):
-        """initialize the Static Probability Bot
+        """initialize the State Machine Turtle
 
         Arguments:
           - cooldowns (dict): cooldowns used after certain actions (can prevent special attack)
@@ -74,13 +74,13 @@ class StateMachineTurtle(Turtle):
     def update_directions(self, attribute_list):
         """Takes a list of attributes from deap
         and creates the necessary state transition variables
-        for the StaticProbabilityTurtle
+        for the StateMachineTurtle
 
         Arguments:
           - (attribute_list): list of 0-100 probabilities for state transitions (e.g. up to down)
 
         Returns:
-          - (dict): kwargs to be fed into StaticProbabilityTurtle constructor
+          - (dict): kwargs to be fed into StateMachineTurtle constructor
         """
         jump_and_attack = attribute_list[0]
         less_than_fifty = 0
