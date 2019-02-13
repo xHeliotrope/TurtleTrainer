@@ -120,7 +120,7 @@ def main():
         population = toolbox.select(offspring, k=len(population))
         print('population: ')
         print(population)
-        top_five = tools.selbest(population, k=5)
+        top_five = tools.selBest(population, k=5)
         print('all offspring fitness:')
         for offs in offspring:
             print(offs.fitness.values)
@@ -129,4 +129,4 @@ def main():
         for topper in top_five:
             print(topper.fitness.values)
 
-    top10 = tools.selbest(population, k=10)
+    top10 = tools.selBest(population, k=10)
