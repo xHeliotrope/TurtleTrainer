@@ -6,9 +6,14 @@ clean turtles
 class Turtle:
     """base class for bots to be run using the 'deap' genetic algorithm library
     """
-    def __init__(self, reward, file_handler):
-        """every turtle needs a reward
+    def __init__(self, env, reward, file_handler):
         """
+        Arguments:
+          - env (<retro.retro_env.RetroEnv obj>): Open AI Retro Game Environment
+          - reward (int): current reward value
+          - file_handler (<FileHandler obj>): for creating game replays
+        """
+        self.env = env
         self.reward = reward
         self.file_handler = file_handler
 
@@ -18,6 +23,7 @@ class Direction:
     """
     def __init__(self, name, key, transitions={}):
         """Initially a direction only has a name
+
         Arguments:
           - name (str): name of the direction
           - key (int or None): int associated with the gamepad key of this direction

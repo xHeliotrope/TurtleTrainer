@@ -17,16 +17,15 @@ import numpy as np
 from . import Direction
 from . import Turtle
 
-class StateMachineTurtle(Turtle):
+class MarkovTurtle(Turtle):
     """hard coded probability-based agent
     =======================================
     This turtle has a probability (non-zero integer)
     of transitioning from on state to another
-    (e.g. 'moving right' to 'moving left' 
-    or 
-    'jumping' to 'moving right and down')
+    ( e.g. 'moving right' to 'moving left' 
+     or 'jumping' to 'moving right and down' )
 
-    not very sophisticated,
+    not very sophisticated
     but the rewards are concrete and comparable (game score)
     which make this a candidate for use in a genetic algorithm
     """
@@ -43,10 +42,11 @@ class StateMachineTurtle(Turtle):
         }
     }
 
-    def __init__(self, file_handler, transitions={}, default_cooldowns={'jump': 10, 'attack': 10}, directions={'4':0,'5':0,'6':0,'7':0}, **kwargs):
+    def __init__(self, env, file_handler, transitions={}, default_cooldowns={'jump': 10, 'attack': 10}, directions={'4':0,'5':0,'6':0,'7':0}, **kwargs):
         """initialize the State Machine Turtle
 
         Arguments:
+          - env (<retro.retro_env.RetroEnv obj>): Open AI Retro Game Environment
           - cooldowns (dict): cooldowns used after certain actions (can prevent special attack)
           - file_handler (<file_handler.FileHandler obj>): used for saving the actions/rewards to a txt file
           - transitions (dict): for registering all of the directions and evaluating how to move
@@ -56,7 +56,7 @@ class StateMachineTurtle(Turtle):
           - **kwargs (dict): not required params (direction/attack/jump probabilities)
         """
         # initial reward is 0
-        super().__init__(0, file_handler)
+        super().__init__(env, 0, file_handler)
         # setup the cooldowns
         self.cooldowns = {}
         self.transitions = transitions
@@ -207,11 +207,10 @@ class StateMachineTurtle(Turtle):
 
         return action
 
-    def run_simulation(self, env):
+    def run_simulation(self):
         """run the simulation, and log the states
 
         Arguments:
-          - env (<retro.retro_env.RetroEnv obj>): Open AI Retro Game Environment
         """
         # boolean value denoting whether the bot has died yet or not (ends the simulation)
         done = False
@@ -226,7 +225,7 @@ class StateMachineTurtle(Turtle):
             # determine next action (uses previous state information of direction)
             action = self.next_action(action, random_int)
             # take an action in the environment, and get the environmental info from that step
-            _obs, _rew, done, _info = env.step(action)
+            _obs, _rew, done, _info = self.env.step(action)
             if not _rew:
                 no_change +=1
                 if no_change > 10000:
