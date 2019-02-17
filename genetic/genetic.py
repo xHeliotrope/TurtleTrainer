@@ -51,7 +51,6 @@ toolbox.register(
 
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
-GEN = 0
 # for the saving of videos and backups
 def evaluate_turtle(individual):
     """evaluates the success of a given turtlebot
@@ -62,19 +61,14 @@ def evaluate_turtle(individual):
     Returns:
       - (tuple): tuple with equal length of the weights (note the comma)
     """
+    print(individual.generation)
     # setup the file handler for writing data locally
-    file_handl = FileHandler(generation=GEN, file_number=random.randint(0, 10000000))
+    file_handl = FileHandler(generation=individual.generation, file_number=random.randint(0, 10000000))
     file_handl.create_video_dir()
     file_handl.write_turtle_stats(individual)
 
-    # config game backup file
-    record_file = './{path}{number}'.format(
-        path=file_handl.video_path,
-        number=str(file_handl.file_number)
-    )
-
     # setup the gym retro environment
-    env = retro.make(game=game_name, record=record_file)
+    env = retro.make(game=game_name, record='./' + file_handl.root_path)
     env.reset()
 
     turtle = MarkovTurtle(env, file_handl, attribute_list=individual)
@@ -95,11 +89,9 @@ def main():
     population = toolbox.population(n=20)
     ngen=20
     for gen in range(ngen):
-        GEN = gen
         offspring = toolbox.select(population, len(population))
-        print('length of offspring after selecting: ', len(offspring))
+        [setattr(ind, 'generation', gen) for ind in offspring]
         offspring = list(map(toolbox.clone, offspring))
-        print('length of offspring after cloning: ', len(offspring))
 
         for child1, child2 in zip(offspring[::2], offspring[1::2]):
             if random.random() < CXPB:
@@ -113,9 +105,11 @@ def main():
                 del mutant.fitness.values
 
         invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
+
         fits = toolbox.map(toolbox.evaluate, invalid_ind)
         for ind, fit in zip(invalid_ind, fits):
             ind.fitness.values = fit
+
         print('offspring: ')
         print(len(offspring))
         print([ind[0] for ind in offspring])
