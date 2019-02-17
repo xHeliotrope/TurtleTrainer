@@ -17,15 +17,16 @@ class FileHandler:
           - file_number (int)
           - video_root (str)
         """
-        self.video_path = '{root}/{gen}'.format(root=video_root, gen=generation)
-        self.backup = '{path}/{number}/{name}.bk2'.format(
+        self.root_path = '{root}/{gen}/{number}'.format(
+                root=video_root,
+                gen=generation, 
+                number=file_number)
+        self.backup = '{root_path}/{name}.bk2'.format(
                 name=file_name,
-                number=file_number,
-                path=self.video_path)
-        self.video = '{path}/{number}/{name}.mp4'.format(
+                root_path=self.root_path)
+        self.video = '{root_path}/{name}.mp4'.format(
                 name=file_name,
-                number=file_number,
-                path=self.video_path)
+                root_path=self.root_path)
         self.file_number = file_number
 
     def create_video(self):
@@ -38,19 +39,19 @@ class FileHandler:
     def write_turtle_stats(self, stats):
         """write the turtle stats into the directory with its backup file
         """
-        with open(self.video_path + '/' + str(self.file_number) + '/stats.txt', 'w+') as statfile:
+        with open(self.root_path + '/stats.txt', 'w+') as statfile:
             statfile.write(str(stats))
 
     def write_turtle_score(self, reward):
         """write the turtle score into the directory with its backup file
         """
-        with open(self.video_path + '/' + str(self.file_number) + '/' + str(reward), 'w+') as rewardfile:
+        with open(self.root_path  + '/' + str(reward), 'w+') as rewardfile:
             rewardfile.write('boop')
 
     def create_video_dir(self):
         """create video file from replay
         """
-        create_dir_command = 'mkdir -p ' + self.video_path + str(self.file_number)
+        create_dir_command = 'mkdir -p ' + self.root_path
         create_video_proc = Popen(create_dir_command, shell=True, stdout=PIPE) 
         create_video_proc.wait()
 
