@@ -90,6 +90,8 @@ def main():
     ngen=20
     for gen in range(ngen):
         offspring = toolbox.select(population, len(population))
+        # add the generation attribute so that can be passed to the
+        # file_handler
         [setattr(ind, 'generation', gen) for ind in offspring]
         offspring = list(map(toolbox.clone, offspring))
 
