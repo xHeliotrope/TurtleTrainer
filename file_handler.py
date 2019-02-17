@@ -7,8 +7,7 @@ game_meta = '-1Player.Leo.Level1-000000'
 class FileHandler:
     """Used for managing backup, mp4 and data logging files
     """
-
-    def __init__(self, file_name=game_name+game_meta, generation=0, file_number=0, video_path='recordings/'):
+    def __init__(self, file_name=game_name+game_meta, generation=0, file_number=0, video_root='recordings'):
         """set the file names
         and open up the logging file for logging
 
@@ -16,17 +15,17 @@ class FileHandler:
           - file_name (str)
           - generation (int)
           - file_number (int)
-          - video_path (str)
+          - video_root (str)
         """
-        self.video_path = video_path + str(generation) + '/'
-        self.backup = '{path}{number}/{name}.bk2'.format(
+        self.video_path = '{root}/{gen}'.format(root=video_root, gen=generation)
+        self.backup = '{path}/{number}/{name}.bk2'.format(
                 name=file_name,
                 number=file_number,
-                path=video_path)
-        self.video = '{path}{number}/{name}.mp4'.format(
+                path=self.video_path)
+        self.video = '{path}/{number}/{name}.mp4'.format(
                 name=file_name,
                 number=file_number,
-                path=video_path)
+                path=self.video_path)
         self.file_number = file_number
 
     def create_video(self):

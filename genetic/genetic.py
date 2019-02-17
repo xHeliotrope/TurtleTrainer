@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import random
 
 import retro
@@ -90,16 +89,18 @@ def evaluate_turtle(individual):
 toolbox.register("evaluate", evaluate_turtle)
 toolbox.register("mate", tools.cxTwoPoint)
 toolbox.register("mutate", tools.mutShuffleIndexes, indpb=0.05)
-toolbox.register("select", tools.selTournament, tournsize=3)
+toolbox.register("select", tools.selTournament, tournsize=10)
 
 def main():
     population = toolbox.population(n=20)
     ngen=20
     for gen in range(ngen):
+        GEN = gen
         offspring = toolbox.select(population, len(population))
+        print('length of offspring after selecting: ', len(offspring))
         offspring = list(map(toolbox.clone, offspring))
-        print(offspring)
-        print(type(offspring))
+        print('length of offspring after cloning: ', len(offspring))
+
         for child1, child2 in zip(offspring[::2], offspring[1::2]):
             if random.random() < CXPB:
                 toolbox.mate(child1, child2)
@@ -116,9 +117,11 @@ def main():
         for ind, fit in zip(invalid_ind, fits):
             ind.fitness.values = fit
         print('offspring: ')
-        print(offspring)
+        print(len(offspring))
+        print([ind[0] for ind in offspring])
         print('population: ')
-        print(population)
+        print(len(population))
+        print([ind[0] for ind in population])
         population[:] = offspring
 
     top10 = tools.selBest(population, k=10)

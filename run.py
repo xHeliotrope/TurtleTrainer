@@ -4,7 +4,7 @@ from os import walk
 
 from genetic import genetic
 
-#genetic.main()
+genetic.main()
 
 def list_all_scores():
     scores = []
