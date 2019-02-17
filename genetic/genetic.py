@@ -8,8 +8,9 @@ from deap import base
 from deap import creator
 from deap import tools
 
-from model.state_machine_turtle import StateMachineTurtle
-from model.neural_turtle import DeepQTurtle
+from . import random_tuple
+
+from model.markov_turtle import MarkovTurtle
 from file_handler import FileHandler
 
 # constants for crossing and mating individuals
@@ -22,26 +23,7 @@ game_meta = '-1Player.Leo.Level1-000000'
 creator.create("ScoreMax", base.Fitness, weights=(1.0,))
 creator.create("Individual", list, fitness=creator.ScoreMax)
 
-def random_tuple(l, sigma):
-    """returns a tuple of random numbers.
-     - the tuple is of length `l`
-     - the sum of the numbers in the tuple is `sigma`
-
-    Arguments:
-        l (int): length of the tuple
-        sigma (int): sum of all the values in the tuple
-    """
-    # start with 2 numbers to 'bookend' the list
-    numrs = [0, sigma]
-    random_list = []
-    # populate numrs with l integers, that are randomly distributed between 0 and sigma
-    [ numrs.append(random.randint(0, sigma)) for _ in range(l - 1) ]
-    numrs.sort()
-    # populate random_list
-    random_list = [numrs[index+1] - numrs[index] for index in range(l)]
-    return tuple(random_list)
-
-# the 8 attributes a StateMachineTurtle Individual needs to be configured
+# the 8 attributes a MarkovTurtle Individual needs to be configured
 # each is a state transition variable, with values 0 -> 100 being a percentage
 toolbox = base.Toolbox()
 
@@ -81,20 +63,24 @@ def evaluate_turtle(individual):
     Returns:
       - (tuple): tuple with equal length of the weights (note the comma)
     """
+    # setup the file handler for writing data locally
     file_handl = FileHandler(generation=GEN, file_number=random.randint(0, 10000000))
     file_handl.create_video_dir()
     file_handl.write_turtle_stats(individual)
-    turtle = StateMachineTurtle(file_handl, attribute_list=individual)
+
+    # config game backup file
     record_file = './{path}{number}'.format(
         path=file_handl.video_path,
         number=str(file_handl.file_number)
     )
 
+    # setup the gym retro environment
     env = retro.make(game=game_name, record=record_file)
     env.reset()
 
-    turtle.run_simulation(env)
-    print(file_handl.file_number)
+    turtle = MarkovTurtle(env, file_handl, attribute_list=individual)
+    turtle.run_simulation()
+
     print('==============')
     print(turtle.reward)
     print('==============')
@@ -110,23 +96,29 @@ def main():
     population = toolbox.population(n=20)
     ngen=20
     for gen in range(ngen):
-        gen = gen
-        offspring = algorithms.varAnd(population, toolbox, cxpb=0.5, mutpb=0.1)
-        fits = toolbox.map(toolbox.evaluate, offspring)
-        for fit, ind in zip(fits, offspring):
+        offspring = toolbox.select(population, len(population))
+        offspring = list(map(toolbox.clone, offspring))
+        print(offspring)
+        print(type(offspring))
+        for child1, child2 in zip(offspring[::2], offspring[1::2]):
+            if random.random() < CXPB:
+                toolbox.mate(child1, child2)
+                del child1.fitness.values
+                del child2.fitness.values
+        
+        for mutant in offspring:
+            if random.random() < MUTPB:
+                toolbox.mutate(mutant)
+                del mutant.fitness.values
+
+        invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
+        fits = toolbox.map(toolbox.evaluate, invalid_ind)
+        for ind, fit in zip(invalid_ind, fits):
             ind.fitness.values = fit
         print('offspring: ')
         print(offspring)
-        population = toolbox.select(offspring, k=len(population))
         print('population: ')
         print(population)
-        top_five = tools.selBest(population, k=5)
-        print('all offspring fitness:')
-        for offs in offspring:
-            print(offs.fitness.values)
-
-        print('top five fitness:')
-        for topper in top_five:
-            print(topper.fitness.values)
+        population[:] = offspring
 
     top10 = tools.selBest(population, k=10)
