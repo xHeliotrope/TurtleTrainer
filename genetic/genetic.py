@@ -61,7 +61,6 @@ def evaluate_turtle(individual):
     Returns:
       - (tuple): tuple with equal length of the weights (note the comma)
     """
-    print(individual.generation)
     # setup the file handler for writing data locally
     file_handl = FileHandler(generation=individual.generation, file_number=random.randint(0, 10000000))
     file_handl.create_video_dir()
@@ -75,7 +74,7 @@ def evaluate_turtle(individual):
     turtle.run_simulation()
 
     print('==============')
-    print(turtle.reward)
+    print('REWARD: ', str(turtle.reward))
     print('==============')
     file_handl.write_turtle_score(turtle.reward)
     return turtle.reward,

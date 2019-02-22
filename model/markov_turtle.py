@@ -13,6 +13,7 @@ for reference, the actions agents use for NES gamepad are:
 from random import randint
 
 import numpy as np
+from gym import wrappers
 
 from . import Direction
 from . import Turtle
@@ -217,6 +218,8 @@ class MarkovTurtle(Turtle):
 
         score = 0
         no_change = 0
+        self.env = wrappers.Monitor(self.env, self.file_handler.root_path)
+        self.env.reset()
         while not done:
             # random integer used for state-transition decision making
             random_int = randint(0, 100)

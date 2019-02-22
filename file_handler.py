@@ -17,7 +17,6 @@ class FileHandler:
           - file_number (int)
           - video_root (str)
         """
-        print(generation)
         self.root_path = '{root}/{gen}/{number}'.format(
                 root=video_root,
                 gen=generation, 
