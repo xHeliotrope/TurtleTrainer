@@ -2,13 +2,6 @@
 """
 import random
 
-import retro
-
-from deap import algorithms
-from deap import base
-from deap import creator
-from deap import tools
-
 def random_tuple(l, sigma):
     """returns a tuple of random numbers.
      - the tuple is of length `l`
