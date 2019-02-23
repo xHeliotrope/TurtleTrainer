@@ -28,13 +28,17 @@ Statistic = {
     "mean_episode_rewards": [],
     "best_mean_episode_rewards": []
 }
-
+USE_CUDA = torch.cuda.is_available()
 LEARNING_RATE = 0.00025
 ALPHA = 0.95
 EPS = 0.01
 learning_starts = 50000
+learning_freq = 4
+batch_size=32
+gamma=0.99
 num_timesteps = int(4e7)
 exploration_schedule = utils.LinearSchedule(1000000, 0.1)
+target_update_freq = 10000
 
 optimizer_spec = OptimizerSpec(
     constructor=torch.optim.RMSprop,
@@ -64,6 +68,7 @@ class Variable(autograd.Variable):
 # Construct an epilson greedy policy with given exploration schedule
 def select_epilson_greedy_action(model, obs, t):
     sample = random.random()
+    num_actions = 9
     eps_threshold = exploration_schedule.value(t)
     if sample > eps_threshold:
         obs = torch.from_numpy(obs).type(dtype).unsqueeze(0) / 255.0
@@ -71,6 +76,7 @@ def select_epilson_greedy_action(model, obs, t):
         return model(Variable(obs, volatile=True)).data.max(1)[1].cpu()
     else:
         return torch.IntTensor([[random.randrange(num_actions)]])
+
 def main():
     frame_history_len = 4
     dtype = torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor
