@@ -185,14 +185,41 @@ class ReplayBuffer(object):
         ---------
         idx: int
             Index in buffer of recently observed frame (returned by `store_frame`).
-        action: int
+        action: nparray
             Action that was performed upon observing this frame.
         reward: float
             Reward that was received when the actions was performed.
         done: bool
             True if episode was finished after performing that action.
         """
+        action = np.nonzero(action==1)[0][0]
         self.action[idx] = action
         self.reward[idx] = reward
         self.done[idx]   = done
 
+
+class LinearSchedule(object):
+    """Stolen from Dartmouth Man
+    """
+    def __init__(self, schedule_timesteps, final_p, initial_p=1.0):
+        """Linear interpolation between initial_p and final_p over
+        schedule_timesteps. After this many timesteps pass final_p is
+        returned.
+        Parameters
+        ----------
+        schedule_timesteps: int
+            Number of timesteps for which to linearly anneal initial_p
+            to final_p
+        initial_p: float
+            initial output value
+        final_p: float
+            final output value
+        """
+        self.schedule_timesteps = schedule_timesteps
+        self.final_p            = final_p
+        self.initial_p          = initial_p
+
+    def value(self, t):
+        """See Schedule.value"""
+        fraction  = min(float(t) / self.schedule_timesteps, 1.0)
+        return self.initial_p + fraction * (self.final_p - self.initial_p)

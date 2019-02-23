@@ -218,7 +218,6 @@ class MarkovTurtle(Turtle):
 
         score = 0
         no_change = 0
-        self.env = wrappers.Monitor(self.env, self.file_handler.root_path)
         self.env.reset()
         while not done:
             # random integer used for state-transition decision making
