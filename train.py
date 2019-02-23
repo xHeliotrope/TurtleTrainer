@@ -5,6 +5,7 @@ from itertools import count
 
 import numpy as np
 import torch
+from torch import autograd
 import gym
 from gym import wrappers
 import retro
@@ -53,6 +54,23 @@ def get_wrapper_by_name(env, classname):
 def stopping_criterion(env, t):
     return t >= num_timesteps
 
+
+class Variable(autograd.Variable):
+    def __init__(self, data, *args, **kwargs):
+        if USE_CUDA:
+            data = data.cuda()
+        super(Variable, self).__init__(data, *args, **kwargs)
+
+# Construct an epilson greedy policy with given exploration schedule
+def select_epilson_greedy_action(model, obs, t):
+    sample = random.random()
+    eps_threshold = exploration_schedule.value(t)
+    if sample > eps_threshold:
+        obs = torch.from_numpy(obs).type(dtype).unsqueeze(0) / 255.0
+        # Use volatile = True if variable is only used in inference mode, i.e. don’t save the history
+        return model(Variable(obs, volatile=True)).data.max(1)[1].cpu()
+    else:
+        return torch.IntTensor([[random.randrange(num_actions)]])
 def main():
     frame_history_len = 4
     dtype = torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor
