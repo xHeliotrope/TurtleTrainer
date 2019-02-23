@@ -6,7 +6,17 @@ def list_all_scores():
     for (root, dirs, files) in walk('../recordings'):
         if('stats.txt' in files and len(files) == 3):
             gen = re.search('recordings/(.*)/', root).group(1)
-            scores[int(gen)].append(int(float(files[0])))
+            try:
+                filescore = int(float(files[0]))
+            except ValueError:
+                try:
+                    filescore = int(float(files[1]))
+                except ValueError:
+                    try:
+                        filescore = int(float(files[2]))
+                    except ValueError:
+                        print("well schucks")
+            scores[int(gen)].append(filescore)
 
     return scores
 
