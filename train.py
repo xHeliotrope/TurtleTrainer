@@ -93,6 +93,7 @@ def main():
 
     q_func = neural_turtle.DeepQTurtle
 
+    print(input_arg, num_actions)
     Q = q_func(input_arg, num_actions).type(dtype)
 
     optimizer = optimizer_spec.constructor(Q.parameters(), **optimizer_spec.kwargs)
@@ -135,7 +136,6 @@ def main():
             poss_act[action] = 1
             action = poss_act
         # Advance one step
-        print(action)
         obs, reward, done, _ = env.step(action)
         # clip rewards between -1 and 1
         reward = max(-1.0, min(reward, 1.0))
