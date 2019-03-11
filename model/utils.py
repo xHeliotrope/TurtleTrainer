@@ -139,7 +139,7 @@ class ReplayBuffer(object):
             return np.concatenate(frames, 0)
         else:
             # this optimization has potential to saves about 30% compute time \o/
-            img_h, img_w = self.obs.shape[2], self.obs.shape[3]
+            img_h, img_w = self.obs.shape[1], self.obs.shape[2]
             return self.obs[start_idx:end_idx].reshape(-1, img_h, img_w)
 
     def store_frame(self, frame):
@@ -157,9 +157,9 @@ class ReplayBuffer(object):
             Index at which the frame is stored. To be used for `store_effect` later.
         """
         # make sure we are not using low-dimensional observations, such as RAM
-        if len(frame.shape) > 1:
-            # transpose image frame into (img_c, img_h, img_w)
-            frame = frame.transpose(2, 0, 1)
+        #if len(frame.shape) > 1:
+        #    # transpose image frame into (img_c, img_h, img_w)
+        #    frame = frame.transpose(2, 0, 1)
 
         if self.obs is None:
             self.obs      = np.empty([self.size] + list(frame.shape), dtype=np.uint8)
@@ -171,7 +171,9 @@ class ReplayBuffer(object):
 
         ret = self.next_idx
         self.next_idx = (self.next_idx + 1) % self.size
-        self.num_in_buffer = min(self.size, self.num_in_buffer + 1)
+        # self.num_in_buffer = min(self.size, self.num_in_buffer + 1)
+        self.num_in_buffer = 32
+        print(self.num_in_buffer)
 
         return ret
 
@@ -193,6 +195,7 @@ class ReplayBuffer(object):
             True if episode was finished after performing that action.
         """
         action = np.nonzero(action==1)[0][0]
+        print(action)
         self.action[idx] = action
         self.reward[idx] = reward
         self.done[idx]   = done

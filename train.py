@@ -1,4 +1,3 @@
-import pickle
 import random
 from collections import namedtuple
 from itertools import count
@@ -32,7 +31,8 @@ USE_CUDA = torch.cuda.is_available()
 LEARNING_RATE = 0.00025
 ALPHA = 0.95
 EPS = 0.01
-learning_starts = 50000
+# learning_starts = 50000
+learning_starts = 1000
 learning_freq = 4
 batch_size=32
 gamma=0.99
@@ -45,19 +45,8 @@ optimizer_spec = OptimizerSpec(
     kwargs=dict(lr=LEARNING_RATE, alpha=ALPHA, eps=EPS),
 )
 
-def get_wrapper_by_name(env, classname):
-    currentenv = env
-    while True:
-        if classname in currentenv.__class__.__name__:
-            return currentenv
-        elif isinstance(env, gym.Wrapper):
-            currentenv = currentenv.env
-        else:
-            raise ValueError("Couldn't find wrapper named %s" % classname)
-
 def stopping_criterion(env, t):
     return t >= num_timesteps
-
 
 class Variable(autograd.Variable):
     def __init__(self, data, *args, **kwargs):
@@ -67,6 +56,7 @@ class Variable(autograd.Variable):
 
 # Construct an epilson greedy policy with given exploration schedule
 def select_epilson_greedy_action(model, obs, t):
+    dtype = torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor
     sample = random.random()
     num_actions = 9
     eps_threshold = exploration_schedule.value(t)
@@ -84,17 +74,16 @@ def main():
     file_handl = FileHandler(file_number=random.randint(0, 10000000))
     file_handl.create_video_dir()
     env = retro.make(game=game_name, record='./' + file_handl.root_path)
-    env = wrappers.Monitor(env, './recordings', force=True)
+    # env = wrappers.Monitor(env, './recordings', force=True)
 
-    img_h, img_w, img_c = env.observation_space.shape
+    img_h, img_w = env.observation_space.shape
 
-    input_arg = frame_history_len * img_c
+    input_arg = frame_history_len
     num_actions = env.action_space.n
 
     q_func = neural_turtle.DeepQTurtle
 
-    print(input_arg, num_actions)
-    Q = q_func(input_arg, num_actions).type(dtype)
+    Q = q_func(num_actions).type(dtype)
 
     optimizer = optimizer_spec.constructor(Q.parameters(), **optimizer_spec.kwargs)
 
@@ -126,7 +115,8 @@ def main():
 
         # Choose random action if not yet start learning
         if t > learning_starts:
-            action = select_epilson_greedy_action(Q, recent_observations, t)[0, 0]
+            # action = select_epilson_greedy_action(Q, recent_observations, t)[0, 0]
+            action = select_epilson_greedy_action(Q, recent_observations, t)
             poss_act = np.zeros(num_actions)
             poss_act[action] = 1
             action = poss_act
@@ -171,6 +161,8 @@ def main():
 
             # Compute current Q value, q_func takes only state and output value for every state-action pair
             # We choose Q based on action taken.
+            print(act_batch.size())
+            print(len(act_batch))
             current_Q_values = Q(obs_batch).gather(1, act_batch.unsqueeze(1))
             # Compute next Q value based on which action gives max Q values
             # Detach variable from the current graph since we don't want gradients for next Q to propagated
@@ -196,26 +188,3 @@ def main():
             # Periodically update the target network by Q network to target Q network
             if num_param_updates % target_update_freq == 0:
                 target_Q.load_state_dict(Q.state_dict())
-
-        ### 4. Log progress and keep track of statistics
-        episode_rewards = get_wrapper_by_name(env, "Monitor").get_episode_rewards()
-        if len(episode_rewards) > 0:
-            mean_episode_reward = np.mean(episode_rewards[-100:])
-        if len(episode_rewards) > 100:
-            best_mean_episode_reward = max(best_mean_episode_reward, mean_episode_reward)
-
-        Statistic["mean_episode_rewards"].append(mean_episode_reward)
-        Statistic["best_mean_episode_rewards"].append(best_mean_episode_reward)
-
-        if t % LOG_EVERY_N_STEPS == 0 and t > learning_starts:
-            print("Timestep %d" % (t,))
-            print("mean reward (100 episodes) %f" % mean_episode_reward)
-            print("best mean reward %f" % best_mean_episode_reward)
-            print("episodes %d" % len(episode_rewards))
-            print("exploration %f" % exploration.value(t))
-            sys.stdout.flush()
-
-            # Dump statistics to pickle
-            with open('statistics.pkl', 'wb') as f:
-                pickle.dump(Statistic, f)
-                print("Saved to %s" % 'statistics.pkl')
