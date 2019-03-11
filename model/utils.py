@@ -54,7 +54,9 @@ class ReplayBuffer(object):
 
     def can_sample(self, batch_size):
         """Returns true if `batch_size` different transitions can be sampled from the buffer."""
-        return batch_size + 1 <= self.num_in_buffer
+        # can_samp = batch_size + 1 <= self.num_in_buffer
+        return True
+
 
     def _encode_sample(self, idxes):
         obs_batch      = np.concatenate([self._encode_observation(idx)[np.newaxis, :] for idx in idxes], 0)
@@ -173,7 +175,6 @@ class ReplayBuffer(object):
         self.next_idx = (self.next_idx + 1) % self.size
         # self.num_in_buffer = min(self.size, self.num_in_buffer + 1)
         self.num_in_buffer = 32
-        print(self.num_in_buffer)
 
         return ret
 
@@ -195,7 +196,6 @@ class ReplayBuffer(object):
             True if episode was finished after performing that action.
         """
         action = np.nonzero(action==1)[0][0]
-        print(action)
         self.action[idx] = action
         self.reward[idx] = reward
         self.done[idx]   = done

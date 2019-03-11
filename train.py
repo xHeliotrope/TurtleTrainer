@@ -54,8 +54,8 @@ class Variable(autograd.Variable):
             data = data.cuda()
         super(Variable, self).__init__(data, *args, **kwargs)
 
-# Construct an epilson greedy policy with given exploration schedule
-def select_epilson_greedy_action(model, obs, t):
+# Construct an epsilon greedy policy with given exploration schedule
+def select_epsilon_greedy_action(model, obs, t):
     dtype = torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor
     sample = random.random()
     num_actions = 9
@@ -63,7 +63,7 @@ def select_epilson_greedy_action(model, obs, t):
     if sample > eps_threshold:
         obs = torch.from_numpy(obs).type(dtype).unsqueeze(0) / 255.0
         # Use volatile = True if variable is only used in inference mode, i.e. don’t save the history
-        return model(Variable(obs, volatile=True)).data.max(1)[1].cpu()
+        return model(Variable(obs)).data.max(1)[1].cpu()
     else:
         return torch.IntTensor([[random.randrange(num_actions)]])
 
@@ -83,7 +83,9 @@ def main():
 
     q_func = neural_turtle.DeepQTurtle
 
+
     Q = q_func(num_actions).type(dtype)
+    target_Q = q_func(input_arg).type(dtype)
 
     optimizer = optimizer_spec.constructor(Q.parameters(), **optimizer_spec.kwargs)
 
@@ -100,6 +102,7 @@ def main():
     LOG_EVERY_N_STEPS = 10000
 
     for t in count():
+        print(t)
         ### Check stopping criterion
         if stopping_criterion is not None and stopping_criterion(env, t):
             break
@@ -115,8 +118,7 @@ def main():
 
         # Choose random action if not yet start learning
         if t > learning_starts:
-            # action = select_epilson_greedy_action(Q, recent_observations, t)[0, 0]
-            action = select_epilson_greedy_action(Q, recent_observations, t)
+            action = select_epsilon_greedy_action(Q, recent_observations, t)
             poss_act = np.zeros(num_actions)
             poss_act[action] = 1
             action = poss_act
@@ -140,6 +142,9 @@ def main():
         # Note that this is only done if the replay buffer contains enough samples
         # for us to learn something useful -- until then, the model will not be
         # initialized and random actions should be taken
+        print('learning starts: ', str(t > learning_starts))
+        print('learning_freq: ', str(t % learning_freq))
+        print('can samp: ', str(replay_buffer.can_sample(batch_size)))
         if (t > learning_starts and
                 t % learning_freq == 0 and
                 replay_buffer.can_sample(batch_size)):
@@ -161,8 +166,6 @@ def main():
 
             # Compute current Q value, q_func takes only state and output value for every state-action pair
             # We choose Q based on action taken.
-            print(act_batch.size())
-            print(len(act_batch))
             current_Q_values = Q(obs_batch).gather(1, act_batch.unsqueeze(1))
             # Compute next Q value based on which action gives max Q values
             # Detach variable from the current graph since we don't want gradients for next Q to propagated
@@ -184,7 +187,9 @@ def main():
             # Perfom the update
             optimizer.step()
             num_param_updates += 1
+            print(num_param_updates)
 
             # Periodically update the target network by Q network to target Q network
             if num_param_updates % target_update_freq == 0:
                 target_Q.load_state_dict(Q.state_dict())
+                target_Q.save(Q, './data/')
