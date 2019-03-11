@@ -59,6 +59,7 @@ class ReplayBuffer(object):
 
 
     def _encode_sample(self, idxes):
+        stuff = [self._encode_observation(idx)[np.newaxis, :] for idx in idxes]
         obs_batch      = np.concatenate([self._encode_observation(idx)[np.newaxis, :] for idx in idxes], 0)
         act_batch      = self.action[idxes]
         rew_batch      = self.reward[idxes]
@@ -102,7 +103,7 @@ class ReplayBuffer(object):
             Array of shape (batch_size,) and dtype np.float32
         """
         assert self.can_sample(batch_size)
-        idxes = sample_n_unique(lambda: random.randint(0, self.num_in_buffer - 2), batch_size)
+        idxes = sample_n_unique(lambda: random.randint(0, self.num_in_buffer - 1), batch_size)
         return self._encode_sample(idxes)
 
     def encode_recent_observation(self):
@@ -134,15 +135,23 @@ class ReplayBuffer(object):
         missing_context = self.frame_history_len - (end_idx - start_idx)
         # if zero padding is needed for missing context
         # or we are on the boundry of the buffer
-        if start_idx < 0 or missing_context > 0:
+        #if start_idx < 0 or missing_context > 0:
+        if True:
             frames = [np.zeros_like(self.obs[0]) for _ in range(missing_context)]
             for idx in range(start_idx, end_idx):
                 frames.append(self.obs[idx % self.size])
-            return np.concatenate(frames, 0)
+            thing = np.concatenate(frames, 0)
+            print('NEXT IS OBS')
+            print(self.obs.shape)
+            print('WAS OBS')
+            # return thing
+            return self.obs
         else:
             # this optimization has potential to saves about 30% compute time \o/
             img_h, img_w = self.obs.shape[1], self.obs.shape[2]
-            return self.obs[start_idx:end_idx].reshape(-1, img_h, img_w)
+            stuff = self.obs[start_idx:end_idx].reshape(-1, img_h, img_w)
+            print(stuff.shape)
+            return stuff
 
     def store_frame(self, frame):
         """Store a single frame in the buffer at the next available index, overwriting

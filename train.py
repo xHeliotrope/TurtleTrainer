@@ -152,7 +152,9 @@ def main():
             # Note: done_mask[i] is 1 if the next state corresponds to the end of an episode,
             # in which case there is no Q-value at the next state; at the end of an
             # episode, only the current state reward contributes to the target
+            print('made it in 1')
             obs_batch, act_batch, rew_batch, next_obs_batch, done_mask = replay_buffer.sample(batch_size)
+            print('made it in 2')
             # Convert numpy nd_array to torch variables for calculation
             obs_batch = Variable(torch.from_numpy(obs_batch).type(dtype) / 255.0)
             act_batch = Variable(torch.from_numpy(act_batch).long())
