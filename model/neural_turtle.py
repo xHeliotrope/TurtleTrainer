@@ -13,17 +13,11 @@ class DeepQTurtle(nn.Module):
         self.conv2 = nn.Conv2d(32, 64, kernel_size=4, stride=2)
         self.conv3 = nn.Conv2d(64, 128, kernel_size=4, stride=1)
         self.fc4 = nn.Linear(128, 32)
-        #self.fc4 = nn.Linear(128, 512)
         self.fc5 = nn.Linear(32, num_actions)
 
     def forward(self, x):
-        print('hmmm')
-        print(x.shape)
-        print(x.size())
         x = F.relu(self.conv1(x))
         x = F.relu(self.conv2(x))
         x = F.relu(self.conv3(x))
-        print(x.shape)
-        print(x.size())
         x = F.relu(self.fc4(x.view(-1, x.size(1))))
         return self.fc5(x)
