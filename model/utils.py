@@ -54,12 +54,10 @@ class ReplayBuffer(object):
 
     def can_sample(self, batch_size):
         """Returns true if `batch_size` different transitions can be sampled from the buffer."""
-        # can_samp = batch_size + 1 <= self.num_in_buffer
-        return True
+        return batch_size + 1 <= self.num_in_buffer
 
 
     def _encode_sample(self, idxes):
-        stuff = [self._encode_observation(idx)[np.newaxis, :] for idx in idxes]
         obs_batch      = np.concatenate([self._encode_observation(idx)[np.newaxis, :] for idx in idxes], 0)
         act_batch      = self.action[idxes]
         rew_batch      = self.reward[idxes]
@@ -135,22 +133,16 @@ class ReplayBuffer(object):
         missing_context = self.frame_history_len - (end_idx - start_idx)
         # if zero padding is needed for missing context
         # or we are on the boundry of the buffer
-        #if start_idx < 0 or missing_context > 0:
-        if True:
+        if start_idx < 0 or missing_context > 0:
             frames = [np.zeros_like(self.obs[0]) for _ in range(missing_context)]
             for idx in range(start_idx, end_idx):
                 frames.append(self.obs[idx % self.size])
             thing = np.concatenate(frames, 0)
-            print('NEXT IS OBS')
-            print(self.obs.shape)
-            print('WAS OBS')
-            # return thing
             return self.obs
         else:
             # this optimization has potential to saves about 30% compute time \o/
             img_h, img_w = self.obs.shape[1], self.obs.shape[2]
             stuff = self.obs[start_idx:end_idx].reshape(-1, img_h, img_w)
-            print(stuff.shape)
             return stuff
 
     def store_frame(self, frame):

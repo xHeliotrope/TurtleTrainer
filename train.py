@@ -89,7 +89,7 @@ def main():
 
     optimizer = optimizer_spec.constructor(Q.parameters(), **optimizer_spec.kwargs)
 
-    replay_buffer = utils.ReplayBuffer(size=1000000, frame_history_len=frame_history_len)
+    replay_buffer = utils.ReplayBuffer(size=100000, frame_history_len=frame_history_len)
 
 
     ###############
@@ -102,7 +102,6 @@ def main():
     LOG_EVERY_N_STEPS = 10000
 
     for t in count():
-        print(t)
         ### Check stopping criterion
         if stopping_criterion is not None and stopping_criterion(env, t):
             break
@@ -142,9 +141,6 @@ def main():
         # Note that this is only done if the replay buffer contains enough samples
         # for us to learn something useful -- until then, the model will not be
         # initialized and random actions should be taken
-        print('learning starts: ', str(t > learning_starts))
-        print('learning_freq: ', str(t % learning_freq))
-        print('can samp: ', str(replay_buffer.can_sample(batch_size)))
         if (t > learning_starts and
                 t % learning_freq == 0 and
                 replay_buffer.can_sample(batch_size)):
@@ -152,9 +148,7 @@ def main():
             # Note: done_mask[i] is 1 if the next state corresponds to the end of an episode,
             # in which case there is no Q-value at the next state; at the end of an
             # episode, only the current state reward contributes to the target
-            print('made it in 1')
             obs_batch, act_batch, rew_batch, next_obs_batch, done_mask = replay_buffer.sample(batch_size)
-            print('made it in 2')
             # Convert numpy nd_array to torch variables for calculation
             obs_batch = Variable(torch.from_numpy(obs_batch).type(dtype) / 255.0)
             act_batch = Variable(torch.from_numpy(act_batch).long())
@@ -186,7 +180,7 @@ def main():
             # run backward pass
             current_Q_values.backward(d_error.data.unsqueeze(1))
 
-            # Perfom the update
+            # Perform the update
             optimizer.step()
             num_param_updates += 1
             print(num_param_updates)
