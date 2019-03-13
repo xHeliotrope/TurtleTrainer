@@ -7,9 +7,9 @@ import numpy as np
 class DeepQTurtle(nn.Module):
     """inspired by https://www.youtube.com/watch?v=1XX6N-Gq7Tc
     """
-    def __init__(self, num_actions=18):
+    def __init__(self, channels=4, num_actions=18):
         super(DeepQTurtle, self).__init__()
-        self.conv1 = nn.Conv2d(4, 32, kernel_size=8, stride=4)
+        self.conv1 = nn.Conv2d(channels, 32, kernel_size=8, stride=4)
         self.conv2 = nn.Conv2d(32, 64, kernel_size=4, stride=2)
         self.conv3 = nn.Conv2d(64, 128, kernel_size=4, stride=1)
         self.fc4 = nn.Linear(128, 32)

@@ -58,7 +58,9 @@ class ReplayBuffer(object):
 
 
     def _encode_sample(self, idxes):
-        obs_batch      = np.concatenate([self._encode_observation(idx)[np.newaxis, :] for idx in idxes], 0)
+        stuff = np.concatenate([self._encode_observation(idx)[np.newaxis, :] for idx in idxes], 0)
+        print(stuff.shape)
+        obs_batch      = stuff
         act_batch      = self.action[idxes]
         rew_batch      = self.reward[idxes]
         next_obs_batch = np.concatenate([self._encode_observation(idx + 1)[np.newaxis, :] for idx in idxes], 0)
@@ -102,6 +104,7 @@ class ReplayBuffer(object):
         """
         assert self.can_sample(batch_size)
         idxes = sample_n_unique(lambda: random.randint(0, self.num_in_buffer - 1), batch_size)
+        print('indexes len', len(idxes))
         return self._encode_sample(idxes)
 
     def encode_recent_observation(self):
@@ -174,9 +177,7 @@ class ReplayBuffer(object):
 
         ret = self.next_idx
         self.next_idx = (self.next_idx + 1) % self.size
-        # self.num_in_buffer = min(self.size, self.num_in_buffer + 1)
-        self.num_in_buffer = 32
-
+        self.num_in_buffer = min(self.size, self.num_in_buffer + 1)
         return ret
 
     def store_effect(self, idx, action, reward, done):
