@@ -59,7 +59,6 @@ class ReplayBuffer(object):
 
     def _encode_sample(self, idxes):
         stuff = np.concatenate([self._encode_observation(idx)[np.newaxis, :] for idx in idxes], 0)
-        print(stuff.shape)
         obs_batch      = stuff
         act_batch      = self.action[idxes]
         rew_batch      = self.reward[idxes]
@@ -104,7 +103,6 @@ class ReplayBuffer(object):
         """
         assert self.can_sample(batch_size)
         idxes = sample_n_unique(lambda: random.randint(0, self.num_in_buffer - 1), batch_size)
-        print('indexes len', len(idxes))
         return self._encode_sample(idxes)
 
     def encode_recent_observation(self):
@@ -136,7 +134,9 @@ class ReplayBuffer(object):
         missing_context = self.frame_history_len - (end_idx - start_idx)
         # if zero padding is needed for missing context
         # or we are on the boundry of the buffer
-        if start_idx < 0 or missing_context > 0:
+        # NOTE turning this off for now
+        # if start_idx < 0 or missing_context > 0:
+        if True:
             frames = [np.zeros_like(self.obs[0]) for _ in range(missing_context)]
             for idx in range(start_idx, end_idx):
                 frames.append(self.obs[idx % self.size])

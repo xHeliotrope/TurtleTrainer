@@ -164,9 +164,13 @@ def main():
             # We choose Q based on action taken.
             # return Q, obs_batch, act_batch
             current_Q_values = Q(obs_batch).gather(1, act_batch.unsqueeze(1))
+            # print("current_Q_values.shape ==> ", current_Q_values.shape)
             # Compute next Q value based on which action gives max Q values
             # Detach variable from the current graph since we don't want gradients for next Q to propagated
-            next_max_q = target_Q(next_obs_batch).detach().max(1)[0]
+            target_batchz = target_Q(next_obs_batch)
+            # print("targetQ(next_obs_batch).shape ==> ", target_batchz.shape)
+            next_max_q = target_batchz.detach().max(1)[0]
+            # print("next_max_q ==> ", next_max_q.shape)
             next_Q_values = not_done_mask * next_max_q
             # Compute the target of the current Q values
             target_Q_values = rew_batch + (gamma * next_Q_values)
@@ -175,16 +179,19 @@ def main():
             # clip the bellman error between [-1 , 1]
             clipped_bellman_error = bellman_error.clamp(-1, 1)
             # Note: clipped_bellman_delta * -1 will be right gradient
-            d_error = clipped_bellman_error * -1.0
+            d_error = clipped_bellman_error * - 1.0
             # Clear previous gradients before backward pass
             optimizer.zero_grad()
+
             # run backward pass
-            current_Q_values.backward(d_error.data.unsqueeze(1))
+            # print("error data size ==> ", d_error.data.size())
+            # print("error data (unsqueezed(1)) ==> ", d_error.data.unsqueeze(1).size())
+            current_Q_values.backward(d_error.data)
 
             # Perform the update
             optimizer.step()
             num_param_updates += 1
-            print(num_param_updates)
+            print("num param_updates ==> ", num_param_updates)
 
             # Periodically update the target network by Q network to target Q network
             if num_param_updates % target_update_freq == 0:
