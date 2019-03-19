@@ -65,13 +65,17 @@ def select_epsilon_greedy_action(model, obs, t):
     num_actions = 9
     eps_threshold = exploration_schedule.value(t)
     if sample > eps_threshold:
-        print('sup')
+        print('pre model_obs shape == >', obs.shape)
         obs = torch.from_numpy(obs).type(dtype).unsqueeze(0) / 255.0
         # Use volatile = True if variable is only used in inference mode, i.e. don’t save the history
-        return model(Variable(obs)).data.max(1)[1].cpu()
+        print('post model_obs shape == >', obs.shape)
+        stuff = model(Variable(obs)).data.max(1)[1].cpu()
+        print('last obs_shape ==> ', stuff.shape)
+        return stuff
     else:
-        print('sup')
-        return torch.IntTensor([[random.randrange(num_actions)]])
+        randobs = torch.IntTensor([[random.randrange(num_actions)]])  
+        print("randobs shape ==> ", randobs.shape)
+        return randobs
 
 def main():
     frame_history_len = 4
@@ -97,7 +101,6 @@ def main():
 
     # replay_buffer = utils.ReplayBuffer(size=1000, frame_history_len=frame_history_len)
     replay_buffer = utils.ReplayBuffer(size=100000, frame_history_len=frame_history_len)
-    print('replay buff at instantiation: ', sys.getsizeof(replay_buffer))
 
 
     ###############
@@ -171,7 +174,6 @@ def main():
             # Compute current Q value, q_func takes only state and output value for every state-action pair
             # We choose Q based on action taken.
             # return Q, obs_batch, act_batch
-            print("obs_batch.shape ==> ", obs_batch.shape)
             current_Q_values = Q(obs_batch).gather(1, act_batch.unsqueeze(1))
             # Compute next Q value based on which action gives max Q values
             # Detach variable from the current graph since we don't want gradients for next Q to propagated
