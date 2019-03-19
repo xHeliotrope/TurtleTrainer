@@ -1,13 +1,17 @@
+import sys
 import random
+
 from collections import namedtuple
 from itertools import count
 
 import numpy as np
-import torch
-from torch import autograd
+
 import gym
 from gym import wrappers
 import retro
+
+import torch
+from torch import autograd
 
 from file_handler import FileHandler
 from model import neural_turtle
@@ -61,10 +65,12 @@ def select_epsilon_greedy_action(model, obs, t):
     num_actions = 9
     eps_threshold = exploration_schedule.value(t)
     if sample > eps_threshold:
+        print('sup')
         obs = torch.from_numpy(obs).type(dtype).unsqueeze(0) / 255.0
         # Use volatile = True if variable is only used in inference mode, i.e. don’t save the history
         return model(Variable(obs)).data.max(1)[1].cpu()
     else:
+        print('sup')
         return torch.IntTensor([[random.randrange(num_actions)]])
 
 def main():
@@ -89,7 +95,9 @@ def main():
 
     optimizer = optimizer_spec.constructor(Q.parameters(), **optimizer_spec.kwargs)
 
+    # replay_buffer = utils.ReplayBuffer(size=1000, frame_history_len=frame_history_len)
     replay_buffer = utils.ReplayBuffer(size=100000, frame_history_len=frame_history_len)
+    print('replay buff at instantiation: ', sys.getsizeof(replay_buffer))
 
 
     ###############
@@ -163,8 +171,8 @@ def main():
             # Compute current Q value, q_func takes only state and output value for every state-action pair
             # We choose Q based on action taken.
             # return Q, obs_batch, act_batch
+            print("obs_batch.shape ==> ", obs_batch.shape)
             current_Q_values = Q(obs_batch).gather(1, act_batch.unsqueeze(1))
-            # print("current_Q_values.shape ==> ", current_Q_values.shape)
             # Compute next Q value based on which action gives max Q values
             # Detach variable from the current graph since we don't want gradients for next Q to propagated
             target_batchz = target_Q(next_obs_batch)

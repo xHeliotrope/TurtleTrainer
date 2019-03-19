@@ -58,7 +58,9 @@ class ReplayBuffer(object):
 
 
     def _encode_sample(self, idxes):
+        print('this is it')
         stuff = np.concatenate([self._encode_observation(idx)[np.newaxis, :] for idx in idxes], 0)
+        print(len(stuff))
         obs_batch      = stuff
         act_batch      = self.action[idxes]
         rew_batch      = self.reward[idxes]
@@ -103,6 +105,7 @@ class ReplayBuffer(object):
         """
         assert self.can_sample(batch_size)
         idxes = sample_n_unique(lambda: random.randint(0, self.num_in_buffer - 1), batch_size)
+        print("len idxes: ", len(idxes))
         return self._encode_sample(idxes)
 
     def encode_recent_observation(self):
@@ -135,18 +138,15 @@ class ReplayBuffer(object):
         # if zero padding is needed for missing context
         # or we are on the boundry of the buffer
         # NOTE turning this off for now
-        # if start_idx < 0 or missing_context > 0:
-        if True:
+        if start_idx < 0 or missing_context > 0:
             frames = [np.zeros_like(self.obs[0]) for _ in range(missing_context)]
             for idx in range(start_idx, end_idx):
                 frames.append(self.obs[idx % self.size])
-            thing = np.concatenate(frames, 0)
-            return self.obs
+            return np.concatenate(frames, 0)
         else:
             # this optimization has potential to saves about 30% compute time \o/
             img_h, img_w = self.obs.shape[1], self.obs.shape[2]
-            stuff = self.obs[start_idx:end_idx].reshape(-1, img_h, img_w)
-            return stuff
+            return self.obs[start_idx:end_idx].reshape(-1, img_h, img_w)
 
     def store_frame(self, frame):
         """Store a single frame in the buffer at the next available index, overwriting
