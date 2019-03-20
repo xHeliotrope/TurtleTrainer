@@ -117,7 +117,7 @@ class ReplayBuffer(object):
         """
         assert self.num_in_buffer > 0
         stuff = self._encode_observation((self.next_idx - 1) % self.size)
-        print('encoded shape ==> ', stuff.shape)
+        # print('encoded shape ==> ', stuff.shape)
         return stuff
 
     def _encode_observation(self, idx):

@@ -64,17 +64,19 @@ def select_epsilon_greedy_action(model, obs, t):
     sample = random.random()
     num_actions = 9
     eps_threshold = exploration_schedule.value(t)
-    if sample > eps_threshold:
-        print('pre model_obs shape == >', obs.shape)
+    if True:
+    # if sample > eps_threshold:
+        # print('pre model_obs shape == >', obs.shape)
         obs = torch.from_numpy(obs).type(dtype).unsqueeze(0) / 255.0
         # Use volatile = True if variable is only used in inference mode, i.e. don’t save the history
-        print('post model_obs shape == >', obs.shape)
-        stuff = model(Variable(obs)).data.max(1)[1].cpu()
-        print('last obs_shape ==> ', stuff.shape)
+        # print('post model_obs shape == >', obs.shape)
+        print(obs.shape)
+        stuff = model(Variable(obs)).data.max(1)[1].view(1,1)
+        # print('last obs_shape ==> ', stuff.shape)
         return stuff
     else:
         randobs = torch.IntTensor([[random.randrange(num_actions)]])  
-        print("randobs shape ==> ", randobs.shape)
+        # print("randobs shape ==> ", randobs.shape)
         return randobs
 
 def main():
@@ -128,7 +130,8 @@ def main():
 
         # Choose random action if not yet start learning
         if t > learning_starts:
-            action = select_epsilon_greedy_action(Q, recent_observations, t)
+            action = select_epsilon_greedy_action(Q, recent_observations, t)[0,0]
+            print(action)
             poss_act = np.zeros(num_actions)
             poss_act[action] = 1
             action = poss_act
@@ -174,7 +177,7 @@ def main():
             # Compute current Q value, q_func takes only state and output value for every state-action pair
             # We choose Q based on action taken.
             # return Q, obs_batch, act_batch
-            current_Q_values = Q(obs_batch).gather(1, act_batch.unsqueeze(1))
+            current_Q_values = Q(obs_batch).gather(1, act_batch.unsqueeze(1)).squeeze()
             # Compute next Q value based on which action gives max Q values
             # Detach variable from the current graph since we don't want gradients for next Q to propagated
             target_batchz = target_Q(next_obs_batch)
