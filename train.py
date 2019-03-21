@@ -1,4 +1,3 @@
-import sys
 import random
 
 from collections import namedtuple
@@ -64,7 +63,7 @@ def select_epsilon_greedy_action(model, obs, t):
     sample = random.random()
     num_actions = 9
     eps_threshold = exploration_schedule.value(t)
-    if True:
+    if False:
     # if sample > eps_threshold:
         # print('pre model_obs shape == >', obs.shape)
         obs = torch.from_numpy(obs).type(dtype).unsqueeze(0) / 255.0
@@ -76,7 +75,7 @@ def select_epsilon_greedy_action(model, obs, t):
         return stuff
     else:
         randobs = torch.IntTensor([[random.randrange(num_actions)]])  
-        # print("randobs shape ==> ", randobs.shape)
+        print("randobs shape ==> ", randobs.shape)
         return randobs
 
 def main():
@@ -177,6 +176,11 @@ def main():
             # Compute current Q value, q_func takes only state and output value for every state-action pair
             # We choose Q based on action taken.
             # return Q, obs_batch, act_batch
+            print(act_batch.unsqueeze(1).shape)
+            curr_Q_vals = Q(obs_batch).gather(1, act_batch.unsqueeze(1)).squeeze()
+            print(curr_Q_vals.shape)
+            print("AAAAAAAA")
+            raise
             current_Q_values = Q(obs_batch).gather(1, act_batch.unsqueeze(1)).squeeze()
             # Compute next Q value based on which action gives max Q values
             # Detach variable from the current graph since we don't want gradients for next Q to propagated

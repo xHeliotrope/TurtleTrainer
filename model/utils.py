@@ -136,16 +136,24 @@ class ReplayBuffer(object):
         missing_context = self.frame_history_len - (end_idx - start_idx)
         # if zero padding is needed for missing context
         # or we are on the boundry of the buffer
-        if start_idx < 0 or missing_context > 0:
+        if False:
+        #if start_idx < 0 or missing_context > 0:
             frames = [np.zeros_like(self.obs[0]) for _ in range(missing_context)]
             for idx in range(start_idx, end_idx):
                 frames.append(self.obs[idx % self.size])
             stuff = np.asarray(frames)
+            print('first shape')
+            print(stuff.shape)
             return stuff
         else:
             # this optimization has potential to saves about 30% compute time \o/
             img_h, img_w = self.obs.shape[1], self.obs.shape[2]
+            print('start and end index: ', start_idx, end_idx)
+            otherstuff = self.obs[start_idx:end_idx]
+            print('other stuff shape: ', otherstuff.shape)
             stuff = self.obs[start_idx:end_idx].reshape(-1, img_h, img_w)
+            print('second shape')
+            print(stuff.shape)
             return stuff
 
     def store_frame(self, frame):
@@ -186,7 +194,7 @@ class ReplayBuffer(object):
         up into two functions is so that one can call `encode_recent_observation`
         in between.
 
-        Paramters
+        Parameters
         ---------
         idx: int
             Index in buffer of recently observed frame (returned by `store_frame`).
