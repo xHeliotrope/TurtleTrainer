@@ -19,6 +19,7 @@ class DeepQTurtle(nn.Module):
         x = F.relu(self.conv1(x))
         x = F.relu(self.conv2(x))
         x = F.relu(self.conv3(x))
-        x = F.relu(self.fc4(x.view(32, 18400*4)))
+        x = x.view(x.size(0), -1)
+        x = F.relu(self.fc4(x))
         x = F.relu(self.fc5(x))
         return x

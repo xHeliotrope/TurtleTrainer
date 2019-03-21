@@ -41,7 +41,7 @@ batch_size=32
 gamma=0.99
 num_timesteps = int(4e7)
 exploration_schedule = utils.LinearSchedule(1000000, 0.1)
-target_update_freq = 10000
+target_update_freq = 5000
 
 optimizer_spec = OptimizerSpec(
     constructor=torch.optim.RMSprop,
@@ -63,16 +63,15 @@ def select_epsilon_greedy_action(model, obs, t):
     sample = random.random()
     num_actions = 9
     eps_threshold = exploration_schedule.value(t)
-    if False:
-    # if sample > eps_threshold:
+    if sample > eps_threshold:
         # print('pre model_obs shape == >', obs.shape)
         obs = torch.from_numpy(obs).type(dtype).unsqueeze(0) / 255.0
         # Use volatile = True if variable is only used in inference mode, i.e. don’t save the history
         # print('post model_obs shape == >', obs.shape)
-        print(obs.shape)
+        model_obs = model(Variable(obs)).data.max(1)[1]
         stuff = model(Variable(obs)).data.max(1)[1].view(1,1)
         # print('last obs_shape ==> ', stuff.shape)
-        return stuff
+        return model_obs
     else:
         randobs = torch.IntTensor([[random.randrange(num_actions)]])  
         print("randobs shape ==> ", randobs.shape)
@@ -129,8 +128,7 @@ def main():
 
         # Choose random action if not yet start learning
         if t > learning_starts:
-            action = select_epsilon_greedy_action(Q, recent_observations, t)[0,0]
-            print(action)
+            action = select_epsilon_greedy_action(Q, recent_observations, t)[0]
             poss_act = np.zeros(num_actions)
             poss_act[action] = 1
             action = poss_act

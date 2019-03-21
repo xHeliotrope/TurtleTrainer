@@ -9,7 +9,7 @@ from deap import tools
 
 from . import random_tuple
 
-from model.markov_turtle import MarkovTurtle
+from model.random_turtle import RandomTurtle
 from file_handler import FileHandler
 
 # constants for crossing and mating individuals
@@ -22,7 +22,7 @@ game_meta = '-1Player.Leo.Level1-000000'
 creator.create("ScoreMax", base.Fitness, weights=(1.0,))
 creator.create("Individual", list, fitness=creator.ScoreMax)
 
-# the 8 attributes a MarkovTurtle Individual needs to be configured
+# the 8 attributes a RandomTurtle Individual needs to be configured
 # each is a state transition variable, with values 0 -> 100 being a percentage
 toolbox = base.Toolbox()
 
@@ -70,7 +70,7 @@ def evaluate_turtle(individual):
     env = retro.make(game=game_name, record='./' + file_handl.root_path)
     env.reset()
 
-    turtle = MarkovTurtle(env, file_handl, attribute_list=individual)
+    turtle = RandomTurtle(env, file_handl, attribute_list=individual)
     turtle.run_simulation()
 
     print('==============')

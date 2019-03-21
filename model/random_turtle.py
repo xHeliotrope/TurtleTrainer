@@ -18,7 +18,7 @@ from gym import wrappers
 from . import Direction
 from . import Turtle
 
-class MarkovTurtle(Turtle):
+class RandomTurtle(Turtle):
     """hard coded probability-based agent
     =======================================
     This turtle has a probability (non-zero integer)
