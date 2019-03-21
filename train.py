@@ -69,12 +69,11 @@ def select_epsilon_greedy_action(model, obs, t):
         # Use volatile = True if variable is only used in inference mode, i.e. don’t save the history
         # print('post model_obs shape == >', obs.shape)
         model_obs = model(Variable(obs)).data.max(1)[1]
-        stuff = model(Variable(obs)).data.max(1)[1].view(1,1)
+        # stuff = model(Variable(obs)).data.max(1)[1].view(1,1)
         # print('last obs_shape ==> ', stuff.shape)
         return model_obs
     else:
         randobs = torch.IntTensor([[random.randrange(num_actions)]])  
-        print("randobs shape ==> ", randobs.shape)
         return randobs
 
 def main():
@@ -174,11 +173,6 @@ def main():
             # Compute current Q value, q_func takes only state and output value for every state-action pair
             # We choose Q based on action taken.
             # return Q, obs_batch, act_batch
-            print(act_batch.unsqueeze(1).shape)
-            curr_Q_vals = Q(obs_batch).gather(1, act_batch.unsqueeze(1)).squeeze()
-            print(curr_Q_vals.shape)
-            print("AAAAAAAA")
-            raise
             current_Q_values = Q(obs_batch).gather(1, act_batch.unsqueeze(1)).squeeze()
             # Compute next Q value based on which action gives max Q values
             # Detach variable from the current graph since we don't want gradients for next Q to propagated
@@ -210,5 +204,4 @@ def main():
 
             # Periodically update the target network by Q network to target Q network
             if num_param_updates % target_update_freq == 0:
-                target_Q.load_state_dict(Q.state_dict())
-                target_Q.save(Q, './data/')
+                torch.save(Q.state_dict(), './data/')
