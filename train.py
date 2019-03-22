@@ -204,4 +204,4 @@ def main():
 
             # Periodically update the target network by Q network to target Q network
             if num_param_updates % target_update_freq == 0:
-                torch.save(Q.state_dict(), './data/')
+                torch.save(Q.state_dict(), './data/turtbrayne')
