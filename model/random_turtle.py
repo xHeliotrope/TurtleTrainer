@@ -75,13 +75,13 @@ class RandomTurtle(Turtle):
     def update_directions(self, attribute_list):
         """Takes a list of attributes from deap
         and creates the necessary state transition variables
-        for the StateMachineTurtle
+        for the RandomTurtle
 
         Arguments:
           - (attribute_list): list of 0-100 probabilities for state transitions (e.g. up to down)
 
         Returns:
-          - (dict): kwargs to be fed into StateMachineTurtle constructor
+          - (dict): kwargs to be fed into RandomTurtle constructor
         """
         jump_and_attack = attribute_list[0]
         less_than_fifty = 0
@@ -136,7 +136,7 @@ class RandomTurtle(Turtle):
         return in_range
 
 
-    def next_action(self, action, random_number):
+    def next_action(self):
         """calculates next action to take,
         from previous action state
 
@@ -147,6 +147,11 @@ class RandomTurtle(Turtle):
         Returns:
           - (numpy array [int8]): 9 element numpy array of NES gamepad actions
         """
+        # random integer used for state-transition decision making
+        random_number = randint(0, 100)
+        # base action is to do nothing (all buttons on keypad are zero)
+        action = np.zeros(9, dtype=np.int8)
+
         # decrement the jump and attack cooldowns
         self.cooldowns['jump'] -= 1
         self.cooldowns['attack'] -= 1
@@ -220,12 +225,7 @@ class RandomTurtle(Turtle):
         no_change = 0
         self.env.reset()
         while not done:
-            # random integer used for state-transition decision making
-            random_int = randint(0, 100)
-            # base action is to do nothing (all buttons on keypad are zero)
-            action = np.zeros(9, dtype=np.int8)
-            # determine next action (uses previous state information of direction)
-            action = self.next_action(action, random_int)
+            action = self.next_action()
             # take an action in the environment, and get the environmental info from that step
             _obs, _rew, done, _info = self.env.step(action)
             if not _rew:

@@ -13,6 +13,7 @@ import torch
 from torch import autograd
 
 from file_handler import FileHandler
+from model import random_turtle
 from model import neural_turtle
 from model import utils
 
@@ -42,6 +43,8 @@ gamma=0.99
 num_timesteps = int(4e7)
 exploration_schedule = utils.LinearSchedule(1000000, 0.1)
 target_update_freq = 5000
+
+smart_turtle_attributes = {}
 
 optimizer_spec = OptimizerSpec(
     constructor=torch.optim.RMSprop,
@@ -126,6 +129,7 @@ def main():
         recent_observations = replay_buffer.encode_recent_observation()
 
         # Choose random action if not yet start learning
+        # TODO: choose a smart turtle instead of choosing a random action
         if t > learning_starts:
             action = select_epsilon_greedy_action(Q, recent_observations, t)[0]
             poss_act = np.zeros(num_actions)

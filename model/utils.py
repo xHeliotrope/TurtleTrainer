@@ -227,3 +227,16 @@ class LinearSchedule(object):
         """See Schedule.value"""
         fraction  = min(float(t) / self.schedule_timesteps, 1.0)
         return self.initial_p + fraction * (self.final_p - self.initial_p)
+
+
+def get_smart_turtle_action(smart_turtle, env=None):
+    """
+    Arguments:
+      - smart_turtle (<RandomTurtle obj>): better-than-random turtle
+      - env (<Retro env object>): current state of the game the smart turtle is playing
+
+    Returns:
+      - <Retro env object> : Current
+    """
+    return [1] + [0 for x in range(8)]
+
