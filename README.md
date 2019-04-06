@@ -1,29 +1,16 @@
 # NES GAME BOT
-##### ==============================
 
 #### Technologies Used:
- * Genetic Algorithms (deap, numpy)
- * Reinforcement Learning (retro-gym)
+ * Genetic Algorithms (deap)
+ * Reinforcement Learning (pytorch)
 
 #### Still in the works
- * Wavelets (pywavelets, opencv) 
- * Convolutional Nets for Image Processing (pytorch)
+ * Wavelets/Feature Detection (pywavelets)
 
-NOTE: this project is under active developement
-
-
-The following is FAke nEWS:
-
-## Wavelets
-Wavelets are like waves, but they are zero most of the place. 
-
-Think this:
-[wavelet](https://upload.wikimedia.org/wikipedia/commons/c/c6/Wavelet_-_Meyer.png)
-
-instead of this:
-[sine wave](https://upload.wikimedia.org/wikipedia/commons/c/cd/Wave_sine.svg)
-
-Wavelets are a core part of digital signal processing, and understanding how to construct wavelets, and use their associated functions (discrete wavelet transforms). 
-If you are acquainted with Fourier Transforms, Wavelet Transforms are similar, in both how they act on inputs and what they can do to signals. One of the key differences is that wavelets provide spatial information.
-
-In particular, the Discrete Wavelet Transform (DWT) decomposes a signal into a set of mutually orthogonal _wavelet_ basis _functions_. 
+#### TODOs:
+ [] use a wrapper for retro-gym instead of customizing retro-gym
+ [] create a docker container/possible swarm for parallel genetic ops
+ [] figure out whats creating 2 videos in retro-gym
+ [] register games instead of placing them in virtualenv
+ [] create tutorial
+ [] update jupyter notebook comparing genetic and RL methods
