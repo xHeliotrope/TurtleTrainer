@@ -3,6 +3,7 @@ to keep turtles.py clean
 clean turtles
 """
 
+
 class Turtle:
     """base class for bots to be run using the 'deap' genetic algorithm library
     """
