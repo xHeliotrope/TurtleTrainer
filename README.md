@@ -5,7 +5,7 @@ Throwing some machine learning at retro gaming.
 So far there are two bots:
 
 + Probability Bot
-+ DeepQ Bot - courtesy [transedward/pytorch-dqn](https://github.com/transedward/pytorch-dqn)
++ DeepQ Bot - courtesy [transedward](https://github.com/transedward/pytorch-dqn)
 
 These bots attempt to complete games of Teenage Mutant Ninja Turtles.
 The plan is to gain efficiency at beating the levels or retain some measure of skill over time.
