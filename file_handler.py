@@ -1,5 +1,6 @@
 from subprocess import Popen
 from subprocess import PIPE
+import retro
 
 game_name = 'TeenageMutantNinjaTurtlesIIITheManhattanProject-Nes'
 game_meta = '-1Player.Leo.Level1-000000'
@@ -32,9 +33,12 @@ class FileHandler:
     def create_video(self):
         """create video file from replay
         """
-        create_video_command = 'python3 -m retro.scripts.playback_movie ' + self.backup
-        create_video_proc = Popen(create_video_command, shell=True, stdout=PIPE) 
+        commands = ['ve/bin/python', '-m', 'retro.scripts.playback_movie',
+                self.backup]
+        print(self.backup)
+        create_video_proc = Popen(commands)
         create_video_proc.wait()
+        print('video finished!')
 
     def write_turtle_stats(self, stats):
         """write the turtle stats into the directory with its backup file

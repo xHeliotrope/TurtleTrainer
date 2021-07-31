@@ -11,13 +11,12 @@ def random_tuple(l, sigma):
         l (int): length of the tuple
         sigma (int): sum of all the values in the tuple
     """
-    # start with 2 numbers to 'bookend' the list
-    numrs = [0, sigma]
+    percentage_indices = [0, sigma]
     random_list = []
     # populate numrs with l integers, that are randomly distributed between 0 and sigma
-    [ numrs.append(random.randint(0, sigma)) for _ in range(l - 1) ]
-    numrs.sort()
-    # populate random_list
-    random_list = [numrs[index+1] - numrs[index] for index in range(l)]
+    for _ in range(l - 1):
+        percentage_indices.append(random.randint(0, sigma))
+    percentage_indices.sort()
+    random_list = [percentage_indices[index + 1] - percentage_indices[index] for index in range(l)]
     return tuple(random_list)
 

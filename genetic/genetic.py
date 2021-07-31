@@ -12,9 +12,6 @@ from . import random_tuple
 from model.random_turtle import RandomTurtle
 from file_handler import FileHandler
 
-# constants for crossing and mating individuals
-CXPB = 0.5
-MUTPB = 0.2
 
 game_name = 'TeenageMutantNinjaTurtlesIIITheManhattanProject-Nes'
 game_meta = '-1Player.Leo.Level1-000000'
@@ -79,27 +76,35 @@ def evaluate_turtle(individual):
     file_handl.write_turtle_score(turtle.reward)
     return turtle.reward,
 
-toolbox.register("evaluate", evaluate_turtle)
 toolbox.register("mate", tools.cxTwoPoint)
 toolbox.register("mutate", tools.mutShuffleIndexes, indpb=0.05)
 toolbox.register("select", tools.selTournament, tournsize=10)
+toolbox.register("evaluate", evaluate_turtle)
 
 def main():
     population = toolbox.population(n=20)
-    ngen=20
-    for gen in range(ngen):
+    # number of generations
+    NGEN = 20
+    # crossing probability
+    CXPB = 0.5
+    # mating probability
+    MUTPB = 0.2
+    for gen in range(NGEN):
+        # select the next generation individuals
         offspring = toolbox.select(population, len(population))
         # add the generation attribute so that can be passed to the
         # file_handler
         [setattr(ind, 'generation', gen) for ind in offspring]
         offspring = list(map(toolbox.clone, offspring))
 
+        # CROSSING
         for child1, child2 in zip(offspring[::2], offspring[1::2]):
             if random.random() < CXPB:
                 toolbox.mate(child1, child2)
                 del child1.fitness.values
                 del child2.fitness.values
         
+        # MATING
         for mutant in offspring:
             if random.random() < MUTPB:
                 toolbox.mutate(mutant)
@@ -113,10 +118,11 @@ def main():
 
         print('offspring: ')
         print(len(offspring))
-        print([ind[0] for ind in offspring])
+        print([ind for ind in offspring])
         print('population: ')
         print(len(population))
-        print([ind[0] for ind in population])
+        print([ind for ind in population])
         population[:] = offspring
 
     top10 = tools.selBest(population, k=10)
+    print(top10)
