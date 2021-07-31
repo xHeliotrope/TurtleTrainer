@@ -1,5 +1,6 @@
 # NES GAME BOT
 
+
 Throwing some machine learning at retro gaming.
 
 So far there are two bots:
@@ -30,3 +31,8 @@ The training code can be used to generate models/hyperparameters.
  - [ ] register games instead of placing them in virtualenv
  - [ ] create tutorial
  - [ ] update jupyter notebook comparing genetic and RL methods
+
+### Install notes for macOs
+ - might need to run `CFLAGS='-I/usr/local/opt/zlib/include
+   -L/usr/local/opt/zlib/lib' pip install Pillow==6.2.0` to get Pillow to
+   install
