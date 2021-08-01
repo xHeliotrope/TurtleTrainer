@@ -31,9 +31,9 @@ class RandomBotTest(unittest.TestCase):
         """
         fh = FileHandler()
         states = (1, 33, 66)
-        transitions = [(1,99), states, states, states, states, states, states]
+        #transitions = [(1,99), states, states, states, states, states, states]
         env = retro.make(game=game_name, record='./' + fh.root_path)
-        bot = RandomBot(env, fh, transitions)
+        bot = RandomBot(env, fh, {})
         assert type(bot) == RandomBot
 
     # def test_create_env(self):

@@ -95,9 +95,9 @@ class RandomBot(Bot):
             'end': random.randint(less_than_fifty, 100)
         }
 
-        for direction_set, directions in GAMEPAD_DIRS.items():
+        for _, directions in GAMEPAD_DIRS.items():
             # this is needed so that the probabilities form a range
-            available_directions = list(direction_set.keys())
+            available_directions = list(directions.keys())
             for name, button in directions.items():
                 new_direction = Direction(name, button)
                 base_probability = 0

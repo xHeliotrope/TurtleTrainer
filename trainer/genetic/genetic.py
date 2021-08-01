@@ -66,14 +66,15 @@ def evaluate_turtle(individual):
     # setup the gym retro environment
     env = retro.make(game=game_name, record='./' + file_handler.root_path)
     env.reset()
+    #transitions = [(33, 67), (1, 33, 66), (1, 33, 66), (1, 33, 66), (1, 33, 66), (1, 33, 66), (1, 33, 66)]
 
-    turtle = RandomBot(env, file_handler, attribute_list=individual)
+    turtle = RandomBot(env, file_handler, {}, attribute_list=individual)
     turtle.run_simulation()
 
     print('==============')
     print('REWARD: ', str(turtle.reward))
     print('==============')
-    file_handl.write_turtle_score(turtle.reward)
+    file_handler.write_turtle_score(turtle.reward)
     return turtle.reward,
 
 toolbox.register("mate", tools.cxTwoPoint)
