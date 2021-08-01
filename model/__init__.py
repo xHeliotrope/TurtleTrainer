@@ -4,15 +4,15 @@ clean turtles
 """
 
 
-class Turtle:
-    """base class for bots to be run using the 'deap' genetic algorithm library
+class Bot:
+    """base class for playing ninja turtles
     """
     def __init__(self, env, reward, file_handler):
         """
         Arguments:
           - env (<retro.retro_env.RetroEnv obj>): Open AI Retro Game Environment
           - reward (int): current reward value
-          - file_handler (<FileHandler obj>): for creating game replays
+          - file_handler (<FileHandler obj>): for saving game replays
         """
         self.env = env
         self.reward = reward
@@ -22,7 +22,7 @@ class Turtle:
 class Direction:
     """For states and state transitioning
     """
-    def __init__(self, name, key, transitions={}):
+    def __init__(self, name, key, transitions):
         """Initially a direction only has a name
 
         Arguments:
@@ -35,13 +35,12 @@ class Direction:
         self.transitions = transitions
 
     def __repr__(self):
-        return 'Directions: ' + str(self.transitions)
+        if self.transitions:
+            return f'Direction {self.name}: {str(self.transitions)}'
+        return f'Direction {self.name}'
 
     def update_transitions(self, name, probability):
-        """Since not all connected states might be defined at initialization
-        this method sets the connected states after initialization
-
-        this method updates the transitions dict
+        """this method updates the transitions dict
 
         Arguments:
           - name (str): name of <Direction obj>

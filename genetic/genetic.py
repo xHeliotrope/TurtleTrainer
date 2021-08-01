@@ -59,15 +59,15 @@ def evaluate_turtle(individual):
       - (tuple): tuple with equal length of the weights (note the comma)
     """
     # setup the file handler for writing data locally
-    file_handl = FileHandler(generation=individual.generation, file_number=random.randint(0, 10000000))
-    file_handl.create_video_dir()
-    file_handl.write_turtle_stats(individual)
+    file_handler = FileHandler(generation=individual.generation, file_number=random.randint(0, 10000000))
+    file_handler.create_video_dir()
+    file_handler.write_turtle_stats(individual)
 
     # setup the gym retro environment
-    env = retro.make(game=game_name, record='./' + file_handl.root_path)
+    env = retro.make(game=game_name, record='./' + file_handler.root_path)
     env.reset()
 
-    turtle = RandomTurtle(env, file_handl, attribute_list=individual)
+    turtle = RandomTurtle(env, file_handler, attribute_list=individual)
     turtle.run_simulation()
 
     print('==============')
@@ -123,6 +123,3 @@ def main():
         print(len(population))
         print([ind for ind in population])
         population[:] = offspring
-
-    top10 = tools.selBest(population, k=10)
-    print(top10)

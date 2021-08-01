@@ -33,12 +33,9 @@ class FileHandler:
     def create_video(self):
         """create video file from replay
         """
-        commands = ['ve/bin/python', '-m', 'retro.scripts.playback_movie',
-                self.backup]
-        print(self.backup)
+        commands = ['ve/bin/python', '-m', 'retro.scripts.playback_movie', self.backup]
         create_video_proc = Popen(commands)
         create_video_proc.wait()
-        print('video finished!')
 
     def write_turtle_stats(self, stats):
         """write the turtle stats into the directory with its backup file

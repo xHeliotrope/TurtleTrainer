@@ -10,25 +10,25 @@ for reference, the actions agents use for NES gamepad are:
   7 - "right"
   8 - "a"
 """
-from random import randint
+import random
 
 import numpy as np
 from gym import wrappers
 
 from . import Direction
-from . import Turtle
+from . import Bot
 
-class RandomTurtle(Turtle):
+class RandomBot(Bot):
     """hard coded probability-based agent
     =======================================
-    This turtle has a probability (non-zero integer)
+    This turtle has a probability (non-zero integer <= 100)
     of transitioning from on state to another
     ( e.g. 'moving right' to 'moving left' 
      or 'jumping' to 'moving right and down' )
 
     not very sophisticated
     but the rewards are concrete and comparable (game score)
-    which make this a candidate for use in a genetic algorithm
+    which make this usable in a genetic algorithm
     """
     GAMEPAD_DIRS = {
         "vertical": {
@@ -43,66 +43,68 @@ class RandomTurtle(Turtle):
         }
     }
 
-    def __init__(self, env, file_handler, transitions={}, default_cooldowns={'jump': 10, 'attack': 10}, directions={'4':0,'5':0,'6':0,'7':0}, **kwargs):
-        """initialize the State Machine Turtle
+    def __init__(self, env, file_handler, transitions, cooldowns={'jump': 10, 'attack': 10}, directions={'4':0,'5':0,'6':0,'7':0}, **kwargs):
+        """initialize the Random / State Machine Turtle
 
         Arguments:
           - env (<retro.retro_env.RetroEnv obj>): Open AI Retro Game Environment
-          - cooldowns (dict): cooldowns used after certain actions (can prevent special attack)
           - file_handler (<file_handler.FileHandler obj>): used for saving the actions/rewards to a txt file
           - transitions (dict): for registering all of the directions and evaluating how to move
                                 based on the probilities defined in the associated Direction object
+          - cooldowns (dict): cooldowns used after certain actions (can prevent special attack)
           - directions (dict): dict of `4`, `5`, `6` and `7` keys as `1` or `0` values
                                keys are the index of (`up`, `down`, `left`, `right` gamepad keys)
           - **kwargs (dict): not required params (direction/attack/jump probabilities)
         """
         # initial reward is 0
         super().__init__(env, 0, file_handler)
+        self.transitions = transitions
+
         # setup the cooldowns
         self.cooldowns = {}
-        self.transitions = transitions
-        self.default_cooldowns = default_cooldowns
-        for key, value in default_cooldowns.items():
+        for key, value in cooldowns.items():
             self.cooldowns[key] = value
 
         self.directions = directions
 
-        self.to_attack = 5
-        self.to_jump = 20
         if "attribute_list" in kwargs:
             self.update_directions(kwargs["attribute_list"])
 
     def update_directions(self, attribute_list):
         """Takes a list of attributes from deap
         and creates the necessary state transition variables
-        for the RandomTurtle
+        for the RandomBot
 
         Arguments:
-          - (attribute_list): list of 0-100 probabilities for state transitions (e.g. up to down)
+          - (attribute_list): list of 0 - 100 probabilities for state transitions (e.g. up to down)
 
         Returns:
-          - (dict): kwargs to be fed into RandomTurtle constructor
+          - (dict): kwargs to be fed into RandomBot constructor
         """
         jump_and_attack = attribute_list[0]
-        less_than_fifty = 0
-        if jump_and_attack[0] < 50:
-            less_than_fifty = jump_and_attack[0]
-        else:
-            less_than_fifty = jump_and_attack[1]
+        # less than fifty has to be a probability of less than fifty
+        less_than_fifty = jump_and_attack[0] if jump_and_attack[0] <= 50 else jump_and_attack[1]
 
-        self.to_jump = {'start': 0, 'end': less_than_fifty}
-        self.to_attack = {'start': less_than_fifty, 'end':randint(less_than_fifty, 100)}
+        self.to_jump = {
+            'start': 0,
+            'end': less_than_fifty
+        }
+        self.to_attack = {
+            'start': less_than_fifty,
+            'end': random.randint(less_than_fifty, 100)
+        }
 
         for direction_set, directions in self.GAMEPAD_DIRS.items():
-            related_directions = list(directions.keys())
             # this is needed so that the probabilities form a range
-            for direction_name, direction_key in directions.items():
-                new_direction = Direction(direction_name, direction_key)
+            available_directions = list(direction_set.keys())
+            for name, button in directions.items():
+                new_direction = Direction(name, button)
                 base_probability = 0
+
                 for attribute in attribute_list[1:]:
                     for index, probability in enumerate(attribute):
                         new_direction.update_transitions(
-                            related_directions[index],
+                                available_directions[index],
                             {
                                 'start': base_probability,
                                 'end': base_probability + probability - 1
@@ -135,7 +137,6 @@ class RandomTurtle(Turtle):
         in_range = greater_than and less_than
         return in_range
 
-
     def next_action(self):
         """calculates next action to take,
         from previous action state
@@ -147,8 +148,8 @@ class RandomTurtle(Turtle):
         Returns:
           - (numpy array [int8]): 9 element numpy array of NES gamepad actions
         """
-        # random integer used for state-transition decision making
-        random_number = randint(0, 100)
+        # random integer used for decision making
+        random_number = random.randint(0, 100)
         # base action is to do nothing (all buttons on keypad are zero)
         action = np.zeros(9, dtype=np.int8)
 
@@ -195,7 +196,6 @@ class RandomTurtle(Turtle):
             elif self.compare_transition('vert_None', 'up', random_number):
                 self.switch_direction(None, '5')
 
-
         # attack when the `jump` cooldown is inactive
         if self.to_attack['start'] <= random_number <= self.to_attack['end'] and self.cooldowns['jump'] <= 0:
             action[0] = 1
@@ -215,8 +215,6 @@ class RandomTurtle(Turtle):
 
     def run_simulation(self):
         """run the simulation, and log the states
-
-        Arguments:
         """
         # boolean value denoting whether the bot has died yet or not (ends the simulation)
         done = False
