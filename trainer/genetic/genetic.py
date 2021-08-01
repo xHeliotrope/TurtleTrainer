@@ -9,8 +9,8 @@ from deap import tools
 
 from . import random_tuple
 
-from model.random_turtle import RandomTurtle
-from file_handler import FileHandler
+from trainer.handler import FileHandler
+from trainer.model.random_bot import RandomBot
 
 
 game_name = 'TeenageMutantNinjaTurtlesIIITheManhattanProject-Nes'

@@ -15,8 +15,8 @@ import random
 import numpy as np
 from gym import wrappers
 
-from model.base import Bot
-from model.base import Direction
+from trainer.model.base import Bot
+from trainer.model.base import Direction
 
 GAMEPAD_DIRS = {
     "vertical": {
