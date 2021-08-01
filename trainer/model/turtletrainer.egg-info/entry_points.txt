@@ -1,0 +1,4 @@
+[console_scripts]
+dj = felix.manage:main
+manage = felix.manage:main
+

@@ -1,0 +1,7 @@
+README.md
+setup.py
+model/turtletrainer.egg-info/PKG-INFO
+model/turtletrainer.egg-info/SOURCES.txt
+model/turtletrainer.egg-info/dependency_links.txt
+model/turtletrainer.egg-info/entry_points.txt
+model/turtletrainer.egg-info/top_level.txt
