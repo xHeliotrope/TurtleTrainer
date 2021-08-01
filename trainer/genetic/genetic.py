@@ -67,7 +67,7 @@ def evaluate_turtle(individual):
     env = retro.make(game=game_name, record='./' + file_handler.root_path)
     env.reset()
 
-    turtle = RandomTurtle(env, file_handler, attribute_list=individual)
+    turtle = RandomBot(env, file_handler, attribute_list=individual)
     turtle.run_simulation()
 
     print('==============')
