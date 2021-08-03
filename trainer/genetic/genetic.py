@@ -77,7 +77,7 @@ def evaluate_turtle(individual):
 
 toolbox.register("mate", tools.cxTwoPoint)
 toolbox.register("mutate", mutations.mutShuffleIndexesSkipZero, indpb=0.05)
-toolbox.register("select", tools.selTournament, tournsize=10)
+toolbox.register("select", tools.selBest)
 toolbox.register("evaluate", evaluate_turtle)
 
 def main():
@@ -88,42 +88,63 @@ def main():
     CXPB = 0.5
     # mating probability
     MUTPB = 0.2
+    first_run = True
     for gen in range(NGEN):
         # select the next generation individuals
-        offspring = toolbox.select(population, len(population))
-        # add the generation attribute so that can be passed to the
-        # file_handler
-        [setattr(ind, 'generation', gen) for ind in offspring]
+        if first_run:
+            offspring = toolbox.select(population, 20)
+        if not first_run:
+            offspring = toolbox.select(population, 15)
+        # make clones the offspring (for object-oriented reasons)
         offspring = list(map(toolbox.clone, offspring))
+
+        # cull the weak
+        strong_offspring = []
+        for child in offspring:
+            # if child had a score
+            # (first-gen wont have a score so include them by default)
+            if first_run or float(child.fitness.values[0]):
+                if not first_run:
+                    print(child.fitness.values)
+                    print(float(child.fitness.values[0]))
+                    print(bool(float(child.fitness.values[0])))
+                strong_offspring.append(child)
+
+        first_run = False
+        # replace the weak
+        offspring = strong_offspring
+        new_children = NGEN - len(strong_offspring)
+        if new_children:
+            print(f'replacing {new_children} failed children this round')
+            new_children = toolbox.population(n=new_children)
+        else:
+            new_children = []
 
         # CROSSING
         for child1, child2 in zip(offspring[::2], offspring[1::2]):
             if random.random() < CXPB:
                 toolbox.mate(child1, child2)
+                print(f'making {child1} and {child2} invalid via crossing')
                 del child1.fitness.values
                 del child2.fitness.values
         
         # MATING
         for mutant in offspring:
             if random.random() < MUTPB:
+                print(f'making {mutant} invalid via mutation')
                 toolbox.mutate(mutant)
                 del mutant.fitness.values
 
-        invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
 
+        # adding in new children
+        offspring.extend(new_children)
+        # add the generation attribute for the FileHandler
+        [setattr(ind, 'generation', gen) for ind in offspring]
+
+        invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
+        print(f'{len(invalid_ind)} invalid individuals')
         fits = toolbox.map(toolbox.evaluate, invalid_ind)
         for ind, fit in zip(invalid_ind, fits):
             ind.fitness.values = fit
 
         population[:] = offspring
-
-        new_pop = []
-        for p in population:
-            if p.fitness.values[0]:
-                new_pop.append(p)
-        new_members = 20 - len(new_pop)
-        if new_members:
-            new_children = toolbox.population(n=new_members)
-            new_pop.extend(new_children)
-            population = new_pop
-
