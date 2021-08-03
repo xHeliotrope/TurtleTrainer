@@ -64,7 +64,6 @@ def evaluate_turtle(individual):
     # setup the gym retro environment
     env = retro.make(game=file_handler.game_name, record='./' + file_handler.root_path)
     env.reset()
-    #transitions = [(33, 67), (1, 33, 66), (1, 33, 66), (1, 33, 66), (1, 33, 66), (1, 33, 66), (1, 33, 66)]
 
     turtle = RandomBot(env, file_handler, {}, attribute_list=individual)
     turtle.run_simulation()
@@ -76,7 +75,8 @@ def evaluate_turtle(individual):
     return turtle.reward,
 
 toolbox.register("mate", tools.cxTwoPoint)
-toolbox.register("mutate", mutations.mutShuffleIndexesSkipZero, indpb=0.05)
+# indices will be shuffled at least once with probility (1-.10)^7
+toolbox.register("mutate", mutations.mutShiftIndices, indpb=0.10)
 toolbox.register("select", tools.selBest)
 toolbox.register("evaluate", evaluate_turtle)
 
@@ -101,13 +101,10 @@ def main():
         # cull the weak
         strong_offspring = []
         for child in offspring:
-            # if child had a score
+
+            # include the child if the child had a non-zero score
             # (first-gen wont have a score so include them by default)
             if first_run or float(child.fitness.values[0]):
-                if not first_run:
-                    print(child.fitness.values)
-                    print(float(child.fitness.values[0]))
-                    print(bool(float(child.fitness.values[0])))
                 strong_offspring.append(child)
 
         first_run = False
@@ -121,12 +118,12 @@ def main():
             new_children = []
 
         # CROSSING
-        for child1, child2 in zip(offspring[::2], offspring[1::2]):
-            if random.random() < CXPB:
-                toolbox.mate(child1, child2)
-                print(f'making {child1} and {child2} invalid via crossing')
-                del child1.fitness.values
-                del child2.fitness.values
+        #for child1, child2 in zip(offspring[::2], offspring[1::2]):
+        #    if random.random() < CXPB:
+        #        toolbox.mate(child1, child2)
+        #        print(f'making {child1} and {child2} invalid via crossing')
+        #        del child1.fitness.values
+        #        del child2.fitness.values
         
         # MATING
         for mutant in offspring:
