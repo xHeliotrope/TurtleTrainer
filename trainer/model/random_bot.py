@@ -236,4 +236,3 @@ class RandomBot(Bot):
             score += _rew
 
         self.reward = score
-

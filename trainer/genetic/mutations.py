@@ -3,22 +3,17 @@
 This function altered from:
 https://github.com/DEAP/deap/blob/1.3.0/deap/tools/mutation.py#L95
 """
-def mutShuffleIndexes(individual, indpb):
-    """Shuffle the attributes of the input individual and return the mutant.
-    The *individual* is expected to be a :term:`sequence`. The *indpb* argument is the
-    probability of each attribute to be moved. Usually this mutation is applied on
-    vector of indices.
-    :param individual: Individual to be mutated.
-    :param indpb: Independent probability for each attribute to be exchanged to
-                  another position.
-    :returns: A tuple of one individual.
-    This function uses the :func:`~random.random` and :func:`~random.randint`
-    functions from the python base :mod:`random` module.
-    """
+import random
+
+
+def mutShuffleIndexesSkipZero(individual, indpb):
     size = len(individual)
-    for i in xrange(size):
+    for i in range(size):
         if random.random() < indpb:
             swap_indx = random.randint(0, size - 2)
+            # skip swapping with the 0-indexed tuple
+            if i == 0 or swap_indx == 0:
+                continue
             if swap_indx >= i:
                 swap_indx += 1
             individual[i], individual[swap_indx] = \

@@ -3,7 +3,7 @@ import unittest
 import retro
 
 from trainer.handler import FileHandler
-from trainer.genetic.genetic import game_name
+from trainer.handler import game_name
 from trainer.model import Bot
 
 

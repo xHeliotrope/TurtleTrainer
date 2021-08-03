@@ -3,7 +3,7 @@ from subprocess import PIPE
 import retro
 
 game_name = 'TeenageMutantNinjaTurtlesIIITheManhattanProject-Nes'
-game_meta = '-1Player.Leo.Level1-000001'
+game_meta = '-1Player.Leo.Level1-000000'
 
 class FileHandler:
     """Used for managing backup, mp4 and data logging files
@@ -18,6 +18,7 @@ class FileHandler:
           - file_number (int)
           - video_root (str)
         """
+        self.game_name = game_name
         self.root_path = '{root}/{gen}/{number}'.format(
                 root=video_root,
                 gen=generation, 

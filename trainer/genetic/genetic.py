@@ -11,10 +11,8 @@ from . import random_tuple
 
 from trainer.handler import FileHandler
 from trainer.model.random_bot import RandomBot
+from trainer.genetic import mutations
 
-
-game_name = 'TeenageMutantNinjaTurtlesIIITheManhattanProject-Nes'
-game_meta = '-1Player.Leo.Level1-000000'
 
 creator.create("ScoreMax", base.Fitness, weights=(1.0,))
 creator.create("Individual", list, fitness=creator.ScoreMax)
@@ -64,7 +62,7 @@ def evaluate_turtle(individual):
     file_handler.write_turtle_stats(individual)
 
     # setup the gym retro environment
-    env = retro.make(game=game_name, record='./' + file_handler.root_path)
+    env = retro.make(game=file_handler.game_name, record='./' + file_handler.root_path)
     env.reset()
     #transitions = [(33, 67), (1, 33, 66), (1, 33, 66), (1, 33, 66), (1, 33, 66), (1, 33, 66), (1, 33, 66)]
 
@@ -78,7 +76,7 @@ def evaluate_turtle(individual):
     return turtle.reward,
 
 toolbox.register("mate", tools.cxTwoPoint)
-toolbox.register("mutate", tools.mutShuffleIndexes, indpb=0.05)
+toolbox.register("mutate", mutations.mutShuffleIndexesSkipZero, indpb=0.05)
 toolbox.register("select", tools.selTournament, tournsize=10)
 toolbox.register("evaluate", evaluate_turtle)
 
@@ -117,10 +115,15 @@ def main():
         for ind, fit in zip(invalid_ind, fits):
             ind.fitness.values = fit
 
-        print('offspring: ')
-        print(len(offspring))
-        print([ind for ind in offspring])
-        print('population: ')
-        print(len(population))
-        print([ind for ind in population])
         population[:] = offspring
+
+        new_pop = []
+        for p in population:
+            if p.fitness.values[0]:
+                new_pop.append(p)
+        new_members = 20 - len(new_pop)
+        if new_members:
+            new_children = toolbox.population(n=new_members)
+            new_pop.extend(new_children)
+            population = new_pop
+
