@@ -4,6 +4,7 @@ from trainer.genetic import genetic
 from trainer.handler import FileHandler
 from pprint import pprint
 
+
 @task
 def run(c):
     genetic.main()
@@ -23,7 +24,10 @@ def scores(c):
 
 @task
 def clean(c):
-    pass
+    directories_to_clean = ['trainer', 'notebooks', 'tests']
+    for directory in directories_to_clean:
+        c.run('find ' + directory + ' -name "__pycache__" -type d -exec rm -rf {} +')
+        c.run('find ' + directory + ' -name "*.pyc" -type f -exec rm -rf {} +')
 
 @task
 def record(c, generation, file_number):
