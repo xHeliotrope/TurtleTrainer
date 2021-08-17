@@ -10,7 +10,7 @@ from deap import tools
 from . import random_tuple
 
 from trainer.handler import FileHandler
-from trainer.model.random_bot import RandomBot
+from trainer.model.probability.random_bot import RandomBot
 from trainer.genetic import mutations
 
 

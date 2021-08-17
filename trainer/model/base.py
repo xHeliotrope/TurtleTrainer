@@ -1,3 +1,5 @@
+"""Bot creation - regardless of learning method used (probability / neural net)
+"""
 class Bot:
     """base class for playing ninja turtles
     """

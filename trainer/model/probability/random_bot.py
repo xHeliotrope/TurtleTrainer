@@ -138,6 +138,11 @@ class RandomBot(Bot):
         in_range = greater_than and less_than
         return in_range
 
+    def probability_assign(self):
+        """
+        """
+        return self
+
     def next_action(self):
         """calculates next action to take,
         from previous action state
@@ -149,6 +154,11 @@ class RandomBot(Bot):
         Returns:
           - (numpy array [int8]): 9 element numpy array of NES gamepad actions
         """
+        #### START REPLACE
+        #### START REPLACE
+        #### START REPLACE
+        #### START REPLACE
+
         # random integer used for decision making
         random_number = random.randint(0, 100)
         # base action is to do nothing (all buttons on keypad are zero)
@@ -196,6 +206,11 @@ class RandomBot(Bot):
                 self.switch_direction(None, '4')
             elif self.compare_transition('vert_None', 'up', random_number):
                 self.switch_direction(None, '5')
+
+        ###### END REPLACE
+        ###### END REPLACE
+        ###### END REPLACE
+        ###### END REPLACE
 
         # attack when the `jump` cooldown is inactive
         if self.to_attack['start'] <= random_number <= self.to_attack['end'] and self.cooldowns['jump'] <= 0:

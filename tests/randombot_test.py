@@ -4,7 +4,7 @@ import retro
 
 from trainer.handler import FileHandler
 from trainer.handler import game_name
-from trainer.model.random_bot import RandomBot
+from trainer.model.probability.random_bot import RandomBot
 
 
 class RandomBotTest(unittest.TestCase):
