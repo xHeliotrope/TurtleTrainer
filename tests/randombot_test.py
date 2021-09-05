@@ -3,12 +3,13 @@ import unittest
 import pytest
 import retro
 
+from trainer.genetic import random_tuple
 from trainer.handler import FileHandler
 from trainer.handler import game_name
+from trainer.model.base import Direction
 from trainer.model.probability.random_bot import RandomBot
 from trainer.model.probability.model import ProbabilitySet
 from trainer.model.probability.model import ProbabilityException
-from trainer.model.base import Direction
 
 
 class RandomBotTest(unittest.TestCase):
@@ -39,8 +40,12 @@ class RandomBotTest(unittest.TestCase):
         probability_set = ProbabilitySet(moves)
         assert type(probability_set) == ProbabilitySet
         assert type(probability_set.probabilities[0].direction) == Direction
-        assert probability_set.probabilities[0].probability == 23
-        assert probability_set.probabilities[1].probability == 44
+        assert probability_set.probabilities[0].probability_start == 0
+        assert probability_set.probabilities[0].probability_end == 23
+        assert probability_set.probabilities[1].probability_start == 23
+        assert probability_set.probabilities[1].probability_end == 67
+        assert probability_set.probabilities[2].probability_start == 67
+        assert probability_set.probabilities[2].probability_end == 100
 
     def test_create_probability_set_fails_on_invalid_probabilities(self):
         moves = [
@@ -52,3 +57,30 @@ class RandomBotTest(unittest.TestCase):
         with pytest.raises(ProbabilityException) as excinfo:
             ProbabilitySet(moves)
         assert '-77' in str(excinfo.value)
+
+    def test_genetic_algorithm_random_attribute_probabilities(self):
+        """correctly creating attributes for genetic algorithm
+        """
+        attribute_sum = 0
+        attributes = random_tuple(3, attribute_sum)
+        assert attribute_sum == sum(attributes)
+
+        attribute_sum = 1
+        attributes = random_tuple(3, attribute_sum)
+        my_set = set()
+        counts = {
+            str((1,0,0)): 0,
+            str((0,1,0)): 0,
+            str((0,0,1)): 0
+        }
+        for x in range(1000):
+            attributes = random_tuple(3, attribute_sum)
+            counts[str(attributes)] += 1
+        raise Exception(str(counts))
+
+        assert attribute_sum == sum(attributes)
+
+
+        attribute_sum = 100
+        attributes = random_tuple(3, attribute_sum)
+        assert attribute_sum == sum(attributes)

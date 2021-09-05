@@ -34,13 +34,13 @@ GAMEPAD_DIRS = {
 class RandomBot(Bot):
     """hard coded probability-based agent
     =======================================
-    This turtle has a probability (non-zero integer <= 100)
-    of transitioning from on state to another
-    ( e.g. 'moving right' to 'moving left' 
-     or 'jumping' to 'moving right and down' )
+    This turtle uses probabilities (non-zero integer <= 100)
+    to transition from one state to another
+    ( e.g. from 'moving right' to 'moving left'
+     or from 'jumping' to 'moving right and down' )
 
     not very sophisticated
-    but the rewards are concrete and comparable (game score)
+    but the rewards are concrete and comparable (the game score)
     which make this usable in a genetic algorithm
     """
 
@@ -243,7 +243,7 @@ class RandomBot(Bot):
             # take an action in the environment, and get the environmental info from that step
             _obs, _rew, done, _info = self.env.step(action)
             if not _rew:
-                no_change +=1
+                no_change += 1
                 if no_change > 10000:
                     done = True
             else:
