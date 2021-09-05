@@ -1,5 +1,6 @@
 """Bot creation - regardless of learning method used (probability / neural net)
 """
+
 class Bot:
     """base class for playing ninja turtles
     """
@@ -18,26 +19,22 @@ class Bot:
 class Direction:
     """For states and state transitioning
     """
-    def __init__(self, name, key, transitions={}):
+    def __init__(self, name, key):
         """Initially a direction only has a name
 
         Arguments:
           - name (str): name of the direction
           - key (int or None): int associated with the gamepad key of this direction
-          - transitions (dict): <Direction objects> with associated probabilities as values
         """
         self.name = name
         self.key = key
-        self.transitions = transitions
+        self.transitions = {}
 
     def __repr__(self):
-        if self.transitions:
-            return f'Direction {self.name}: {str(self.transitions)}'
         return f'Direction {self.name}'
 
     def update_transitions(self, name, probability):
-        """this method updates the transitions dict
-
+        """
         Arguments:
           - name (str): name of <Direction obj>
           - probability (dict): has `start` and `end` keys, creating a numeric range
