@@ -3,7 +3,8 @@ import unittest
 import pytest
 import retro
 
-from trainer.genetic import random_tuple
+from trainer.genetic.strategy import random_tuple
+from trainer.genetic.strategy import end_weighted_probability
 from trainer.handler import FileHandler
 from trainer.handler import game_name
 from trainer.model.base import Direction
@@ -67,20 +68,33 @@ class RandomBotTest(unittest.TestCase):
 
         attribute_sum = 1
         attributes = random_tuple(3, attribute_sum)
-        my_set = set()
-        counts = {
-            str((1,0,0)): 0,
-            str((0,1,0)): 0,
-            str((0,0,1)): 0
-        }
-        for x in range(1000):
-            attributes = random_tuple(3, attribute_sum)
-            counts[str(attributes)] += 1
-        raise Exception(str(counts))
-
         assert attribute_sum == sum(attributes)
+
+        #my_set = set()
+        #counts = {
+        #    str((1,0,0)): 0,
+        #    str((0,1,0)): 0,
+        #    str((0,0,1)): 0,
+        #}
+        #for x in range(300):
+        #    attributes = random_tuple(3, attribute_sum)
+        #    counts[str(attributes)] += 1
+        #raise Exception(str(counts))
 
 
         attribute_sum = 100
         attributes = random_tuple(3, attribute_sum)
+        assert attribute_sum == sum(attributes)
+
+    def test_double_end_weighted_probability(self):
+        attribute_sum = 1
+        attributes = end_weighted_probability(3, attribute_sum)
+        assert attribute_sum == sum(attributes)
+
+        attribute_sum = 0
+        attributes = end_weighted_probability(3, attribute_sum)
+        assert attribute_sum == sum(attributes)
+
+        attribute_sum = 100
+        attributes = end_weighted_probability(3, attribute_sum)
         assert attribute_sum == sum(attributes)

@@ -7,11 +7,10 @@ from deap import base
 from deap import creator
 from deap import tools
 
-from . import random_tuple
-
 from trainer.handler import FileHandler
 from trainer.model.probability.random_bot import RandomBot
 from trainer.genetic import mutations
+from trainer.genetic.strategy import random_tuple
 
 
 creator.create("ScoreMax", base.Fitness, weights=(1.0,))
