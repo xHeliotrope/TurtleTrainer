@@ -3,8 +3,9 @@ import unittest
 import pytest
 import retro
 
-from trainer.genetic.strategy import random_tuple
 from trainer.genetic.strategy import end_weighted_probability
+from trainer.genetic.strategy import random_tuple
+from trainer.genetic.strategy import uniform_probability
 from trainer.handler import FileHandler
 from trainer.handler import game_name
 from trainer.model.base import Direction
@@ -86,7 +87,7 @@ class RandomBotTest(unittest.TestCase):
         attributes = random_tuple(3, attribute_sum)
         assert attribute_sum == sum(attributes)
 
-    def test_double_end_weighted_probability(self):
+    def test_end_weighted_probability(self):
         attribute_sum = 1
         attributes = end_weighted_probability(3, attribute_sum)
         assert attribute_sum == sum(attributes)
@@ -98,3 +99,7 @@ class RandomBotTest(unittest.TestCase):
         attribute_sum = 100
         attributes = end_weighted_probability(3, attribute_sum)
         assert attribute_sum == sum(attributes)
+
+    def test_uniform_probability(self):
+        attributes = uniform_probability(3)
+        assert 100 == sum(attributes)

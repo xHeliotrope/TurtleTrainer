@@ -27,10 +27,26 @@ def random_tuple(tuple_length, sigma=100):
     return tuple(random_list)
 
 
-def complete_uniform_probability(tuple_length, sigma=100):
-    """this function may be too compute and space expensive to run on-the-fly
+def uniform_probability(tuple_length):
+    """pick three values between 0 and 1, and then normalize them
     """
-    pass
+    def generate_probabilities():
+        probabilities = []
+        for _ in range(tuple_length):
+            probabilities.append(rng.uniform(0, 1.0))
+
+        total = sum(probabilities)
+        # normalize
+        probabilities = [round(p/total * 100) for p in probabilities]
+        return probabilities
+
+    probabilities = generate_probabilities()
+    # in case of issues with rounding
+    while sum(probabilities) != 100:
+        probabilities = generate_probabilities()
+
+    rng.shuffle(probabilities)
+    return tuple(probabilities)
 
 
 def end_weighted_probability(tuple_length, sigma=100):
@@ -45,4 +61,3 @@ def end_weighted_probability(tuple_length, sigma=100):
     probabilities.append(sigma - sum(probabilities))
     rng.shuffle(probabilities)
     return tuple(probabilities)
-
