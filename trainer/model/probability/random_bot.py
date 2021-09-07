@@ -16,7 +16,9 @@ import numpy as np
 from gym import wrappers
 
 from trainer.model.base import Bot
+from trainer.model.base import Button
 from trainer.model.base import Direction
+from trainer.model.probability import ProbabilitySet
 
 GAMEPAD_DIRS = {
     "vertical": {
@@ -31,6 +33,7 @@ GAMEPAD_DIRS = {
     }
 }
 
+NULL_ACTION = np.zeros(9, dtype=np.int8)
 class RandomBot(Bot):
     """hard coded probability-based agent
     =======================================
@@ -83,7 +86,7 @@ class RandomBot(Bot):
           - (dict): kwargs to be fed into RandomBot constructor
         """
         jump_and_attack = attribute_list[0]
-        # less than fifty has to be a probability of less than fifty
+        # less_than_fifty has to be a probability of less than fifty
         less_than_fifty = jump_and_attack[0] if jump_and_attack[0] <= 50 else jump_and_attack[1]
 
         self.to_jump = {
@@ -115,7 +118,6 @@ class RandomBot(Bot):
                         # update the base value for the next range
                         base_probability = base_probability + probability
                     self.transitions[new_direction.name] = new_direction
-
 
     def switch_direction(self, current, future):
         """switch directions from current to future

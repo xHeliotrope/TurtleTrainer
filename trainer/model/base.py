@@ -16,22 +16,28 @@ class Bot:
         self.file_handler = file_handler
 
 
-class Direction:
+class Button:
     """For states and state transitioning
     """
     def __init__(self, name, key):
-        """Initially a direction only has a name
+        """Initially a button only has a name
 
         Arguments:
-          - name (str): name of the direction
-          - key (int or None): int associated with the gamepad key of this direction
+          - name (str): name of the button
+          - key (int or None): int associated with the gamepad key of this button
         """
         self.name = name
         self.key = key
-        self.transitions = {}
 
     def __repr__(self):
-        return f'Direction {self.name}'
+        return f'Button {self.name}'
+
+
+class Direction(Button):
+
+    def __init__(self, name, key):
+        super().__init__(name, key)
+        self.transitions = {}
 
     def update_transitions(self, name, probability):
         """
@@ -42,3 +48,6 @@ class Direction:
                                 so {'start': 13, 'end': 23} would be a 10 percent chance
         """
         self.transitions[name] = probability
+
+    def __repr__(self):
+        return f'Direction {self.name}'
