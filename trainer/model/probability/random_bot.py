@@ -34,6 +34,7 @@ GAMEPAD_DIRS = {
 }
 
 NULL_ACTION = np.zeros(9, dtype=np.int8)
+
 class RandomBot(Bot):
     """hard coded probability-based agent
     =======================================
