@@ -9,7 +9,7 @@ from trainer.model.base import Direction
 from trainer.model.probability import ProbabilitySet
 
 
-NULL_ACTION = np.zeroes(9, dtype=np.int8)
+NULL_ACTION = np.zeros(9, dtype=np.int8)
 
 
 class RandomBotV2(Bot):
