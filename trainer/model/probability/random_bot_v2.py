@@ -15,17 +15,18 @@ NULL_ACTION = np.zeros(9, dtype=np.int8)
 class RandomBotV2(Bot):
     """Random Bot V2
     """
-    def __init__(self, env, file_handler, action, attribute_list):
+    def __init__(self, env, file_handler, direction_probabilities):
         super().__init__(env, 0, file_handler)
-        self.action = action
-        self.attribute_list = attribute_list
+        self.action = NULL_ACTION
+        self.transitions = []
+        self.generate_transitions(direction_probabilities)
 
-    def generate_transitions(self):
+    def generate_transitions(self, directions_set):
         """take a list of attributes and turn them into sets of buttons /
         probabilities
         """
-        for attribute in self.attribute_list:
-            pass
+        for direction_probabilities in directions_set:
+            self.transitions.append(ProbabilitySet(direction_probabilities))
 
     def next_action(self):
         for transition in self.transition:
