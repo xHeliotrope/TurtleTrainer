@@ -9,7 +9,23 @@ from trainer.model.base import Direction
 from trainer.model.probability import ProbabilitySet
 
 
-NULL_ACTION = np.zeros(9, dtype=np.int8)
+def apply_action_update(action, update):
+    '''XOR the action and the update to get the updated action
+    '''
+    return [x ^ y for x, y in zip(action,  update)]
+
+def get_next_action(action, updates):
+    '''apply all updates to the current
+    '''
+    return reduce(lambda acc, ele: apply_action_update(acc, ele), action + updates)
+
+def generate_update(active_indices):
+    '''
+    '''
+    action = np.zeros(9, dtype=np.int8)
+    for index in active_indices:
+        action[index] = 1
+    return action
 
 
 class RandomBotV2(Bot):
@@ -17,7 +33,7 @@ class RandomBotV2(Bot):
     """
     def __init__(self, env, file_handler, direction_probabilities):
         super().__init__(env, 0, file_handler)
-        self.action = NULL_ACTION
+        self.action = np.zeros(9, dtype=np.int8)
         self.transitions = []
         self.generate_transitions(direction_probabilities)
 
