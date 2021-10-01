@@ -8,6 +8,26 @@ from trainer.model.base import Button
 from trainer.model.base import Direction
 from trainer.model.probability import ProbabilitySet
 
+up_down = {
+    4: 0,  # up
+    5: 0,  # down
+    None: 0,  # none
+}
+
+left_right = {
+    6: 0,  # left
+    7: 0,  # right
+    None: 0,  # none
+}
+
+a_b = {
+    0: 0,  # a
+    8: 0,  # b
+    None: 0,  # none
+}
+
+button_set = (a_b, left_right, up_down)
+
 
 def apply_action_update(action, update):
     '''XOR the action and the update to get the updated action
@@ -35,14 +55,12 @@ class RandomBotV2(Bot):
         super().__init__(env, 0, file_handler)
         self.action = np.zeros(9, dtype=np.int8)
         self.transitions = []
-        self.generate_transitions(direction_probabilities)
 
-    def generate_transitions(self, directions_set):
-        """take a list of attributes and turn them into sets of buttons /
-        probabilities
-        """
-        for direction_probabilities in directions_set:
-            self.transitions.append(ProbabilitySet(direction_probabilities))
+        assert len(direction_probabilities) == len(button_set)
+
+        for index, value in enumerate(button_set):
+            print(type(value), value, type(direction_probabilities[index]), direction_probabilities[index])
+            self.transitions.append(ProbabilitySet(direction_probabilities[index]))
 
     def next_action(self):
         for transition in self.transition:
