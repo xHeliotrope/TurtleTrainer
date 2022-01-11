@@ -31,3 +31,4 @@ The training code can be used to generate models/hyperparameters.
  - [ ] register games instead of placing them in virtualenv
  - [ ] create tutorial
  - [ ] update jupyter notebook comparing genetic and RL methods
+
