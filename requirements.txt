@@ -4,7 +4,7 @@ fabric==2.6.0
 gym==0.10.9
 gym-retro==0.8.0
 matplotlib==3.0.2
-numpy==1.18.0
+numpy==1.22.0
 Pillow==8.2.0
 pytest==6.2.4
 PyWavelets==1.0.1
