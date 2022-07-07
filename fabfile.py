@@ -23,6 +23,11 @@ def scores(c):
     pprint(scores)
 
 @task
+def test(c):
+    with c.prefix('. ve/bin/activate'):
+        c.run('pytest')
+
+@task
 def clean(c):
     directories_to_clean = ['trainer', 'notebooks', 'tests']
     for directory in directories_to_clean:

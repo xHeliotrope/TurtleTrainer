@@ -16,7 +16,9 @@ import numpy as np
 from gym import wrappers
 
 from trainer.model.base import Bot
+from trainer.model.base import Button
 from trainer.model.base import Direction
+from trainer.model.probability import ProbabilitySet
 
 GAMEPAD_DIRS = {
     "vertical": {
@@ -31,16 +33,18 @@ GAMEPAD_DIRS = {
     }
 }
 
+NULL_ACTION = np.zeros(9, dtype=np.int8)
+
 class RandomBot(Bot):
     """hard coded probability-based agent
     =======================================
-    This turtle has a probability (non-zero integer <= 100)
-    of transitioning from on state to another
-    ( e.g. 'moving right' to 'moving left' 
-     or 'jumping' to 'moving right and down' )
+    This turtle uses probabilities (non-zero integer <= 100)
+    to transition from one state to another
+    ( e.g. from 'moving right' to 'moving left'
+     or from 'jumping' to 'moving right and down' )
 
     not very sophisticated
-    but the rewards are concrete and comparable (game score)
+    but the rewards are concrete and comparable (the game score)
     which make this usable in a genetic algorithm
     """
 
@@ -83,7 +87,7 @@ class RandomBot(Bot):
           - (dict): kwargs to be fed into RandomBot constructor
         """
         jump_and_attack = attribute_list[0]
-        # less than fifty has to be a probability of less than fifty
+        # less_than_fifty has to be a probability of less than fifty
         less_than_fifty = jump_and_attack[0] if jump_and_attack[0] <= 50 else jump_and_attack[1]
 
         self.to_jump = {
@@ -115,7 +119,6 @@ class RandomBot(Bot):
                         # update the base value for the next range
                         base_probability = base_probability + probability
                     self.transitions[new_direction.name] = new_direction
-
 
     def switch_direction(self, current, future):
         """switch directions from current to future
@@ -243,7 +246,7 @@ class RandomBot(Bot):
             # take an action in the environment, and get the environmental info from that step
             _obs, _rew, done, _info = self.env.step(action)
             if not _rew:
-                no_change +=1
+                no_change += 1
                 if no_change > 10000:
                     done = True
             else:

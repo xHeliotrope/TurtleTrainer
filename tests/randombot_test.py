@@ -1,10 +1,17 @@
 import unittest
 
+import pytest
 import retro
 
+from trainer.genetic.strategy import end_weighted_probability
+from trainer.genetic.strategy import random_tuple
+from trainer.genetic.strategy import uniform_probability
 from trainer.handler import FileHandler
 from trainer.handler import game_name
+from trainer.model.base import Direction
 from trainer.model.probability.random_bot import RandomBot
+from trainer.model.probability.model import ProbabilitySet
+from trainer.model.probability.model import ProbabilityException
 
 
 class RandomBotTest(unittest.TestCase):
@@ -25,3 +32,4 @@ class RandomBotTest(unittest.TestCase):
         bot.update_directions(transitions)
         assert bot.to_jump["start"] == 0
         assert bot.to_jump["end"] >= 1
+
